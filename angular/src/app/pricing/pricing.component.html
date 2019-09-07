@@ -1,0 +1,187 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">User Base Differences</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+<section id="kb">
+  <div class="row">
+    <div class="col-xl-4 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="ft-bell font-large-1 float-left mr-2"></i>
+          <h4 class="card-title mb-0">Free tier</h4>
+          <p class="card-text">Requires only registration</p>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Limited personal use')">
+                <span class="badge bg-primary float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Limited personal use
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to baseline scenarios')">
+                <span class="badge bg-primary float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to baseline scenarios
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable baseline data')">
+                <span class="badge bg-primary float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Downloadable baseline data
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to limited series & countries')">
+                <span class="badge bg-primary float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to limited series & countries
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a class="card-link primary">See all articles (20)</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="ft-book font-large-1 float-left mr-2"></i>
+          <h4 class="card-title">Personal</h4>
+          <p class="card-text">Personal Usage</p>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Limited personal use')">
+                <span class="badge bg-danger float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Limited personal use
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Email about updates')">
+                <span class="badge bg-danger float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Email about updates
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to limited scenarios')">
+                <span class="badge bg-danger float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to limited scenarios
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable scenario data')">
+                <span class="badge bg-danger float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Downloadable scenario data
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to core series & countries')">
+                <span class="badge bg-danger float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to core series & countries
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a class="card-link primary">See all articles (13)</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="ft-file-text text-white font-large-1 float-left mr-2"></i>
+          <h4 class="card-title">Professional</h4>
+          <p class="card-text">Unbound usage</p>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Unconstrained usage')">
+                <span class="badge bg-grey float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Unconstrained usage
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Email about updates')">
+                <span class="badge bg-grey float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Email about updates
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to custom scenario generation')">
+                <span class="badge bg-grey float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to custom scenario generation
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable scenario data')">
+                <span class="badge bg-grey float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Downloadable scenario data
+              </li>
+              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to all covered series & countries')">
+                <span class="badge bg-grey float-left mr-2">
+                  <i class="ft-file-text text-white"></i>
+                </span> Access to all covered series & countries
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a class="card-link primary">See all articles (7)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header bg-info">
+      <h4 class="modal-title white">{{title}}</h4>
+      <button type="button" class="close white" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" id="kbModal-body">
+      <p class="text-bold-500">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p>Test Curabitur et congue orci. Nullam tempor, lectus vitae facilisis consectetur, enim dolor sodales nunc, ut
+        venenatis
+        ipsum massa non eros. Integer tristique consequat sagittis. Sed vitae sapien lobortis, viverra turpis non,
+        hendrerit
+        erat. Vivamus luctus, nisl et dignissim pretium, quam risus sollicitudin augue, ut mollis erat neque a lectus.
+        Donec
+        et ex vitae orci pretium volutpat eget sed est. Nunc ornare mauris nunc, id ullamcorper libero finibus id.
+        Fusce
+        imperdiet laoreet suscipit. Nunc sagittis arcu non sem euismod auctor. Sed tellus odio, posuere id molestie
+        quis,
+        egestas sit amet turpis. Duis velit diam, dictum a semper eu, ultricies id neque. Integer nec eros placerat
+        lacus
+        bibendum viverra in eu urna.</p>
+      <p class="text-bold-500">Suspendisse auctor nisl interdum arcu blandit, sed aliquam leo volutpat.</p>
+      <p>Donec laoreet in nibh vel maximus. Donec posuere aliquam lacus a congue. Interdum et malesuada fames ac ante
+        ipsum
+        primis in faucibus. Aenean semper fringilla arcu, non auctor ante. Ut efficitur euismod scelerisque. Cras
+        accumsan
+        orci rhoncus elementum auctor. Phasellus maximus volutpat nunc ut tincidunt. Lorem ipsum dolor sit amet,
+        consectetur
+        adipiscing elit. Pellentesque aliquet tincidunt neque, et volutpat est dictum non. Nulla hendrerit leo sit amet
+        nisl
+        blandit, quis pharetra lacus ultrices. Etiam pretium ipsum eu dui consectetur maximus. Vivamus pretium luctus
+        lorem,
+        eu viverra velit malesuada at. Nam risus orci, gravida ut convallis et, cursus id velit.</p>
+      <p class="text-bold-500"> Phasellus maximus volutpat nunc ut tincidunt.</p>
+      <p>Donec laoreet in nibh vel maximus. Donec posuere aliquam lacus a congue. Interdum et malesuada fames ac ante
+        ipsum
+        primis in faucibus. Aenean semper fringilla arcu, non auctor ante. Ut efficitur euismod scelerisque. Cras
+        accumsan
+        orci rhoncus elementum auctor. Phasellus maximus volutpat nunc ut tincidunt. Lorem ipsum dolor sit amet,
+        consectetur
+        adipiscing elit. Pellentesque aliquet tincidunt neque, et volutpat est dictum non. Nulla hendrerit leo sit amet
+        nisl
+        blandit, quis pharetra lacus ultrices. Etiam pretium ipsum eu dui consectetur maximus. Vivamus pretium luctus
+        lorem,
+        eu viverra velit malesuada at. Nam risus orci, gravida ut convallis et, cursus id velit.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info btn-raised" (click)="c('Close click')">Close</button>
+    </div>
+  </ng-template>
+
+</section>

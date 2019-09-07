@@ -1,0 +1,124 @@
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">
+			</div>
+			<div class="card-content">
+				<div class="card-body">
+					<div class="chart-info mb-3 ml-3">
+						Annual growth around the world
+					</div>
+					<div id="line-area" class="height-650 lineArea">
+    					<div [chart]="mapChart"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<section id="hoverable-rows">
+			<div class="row text-left">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-header">
+							<div ngbDropdown>
+								<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ countrySelected }}</button>
+								<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+									<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)" >{{stop_country}}</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr>
+											<th><a (click)="GetDetails(content, 'Growth')" class="card-link primary">Growth</a>
+											</th>
+											<th>2019Q1</th>
+											<th>2019Q2</th>
+											<th>2019Q3</th>
+											<th>2018</th>
+											<th>2019</th>
+											<th>2020</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row">QoQ</th>
+											<td>1.21%</td>
+											<td>2.21%</td>
+											<td>3.21%</td>
+											<td>4.21%</td>
+											<td>5.21%</td>
+											<td>6.21%</td>
+										</tr>
+										<tr>
+											<th scope="row">YoY</th>
+											<td>7.21%</td>
+											<td>8.21%</td>
+											<td>9.21%</td>
+											<td>10.21%</td>
+											<td>11.21%</td>
+											<td>12.21%</td>
+										</tr>
+										<tr>
+											<th scope="row"><a class="card-link primary">Deflator</a></th>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<th scope="row">QoQ</th>
+											<td>1.21%</td>
+											<td>2.21%</td>
+											<td>3.21%</td>
+											<td>4.21%</td>
+											<td>5.21%</td>
+											<td>6.21%</td>
+										</tr>
+										<tr>
+											<th scope="row">YoY</th>
+											<td>7.21%</td>
+											<td>8.21%</td>
+											<td>9.21%</td>
+											<td>10.21%</td>
+											<td>11.21%</td>
+											<td>12.21%</td>
+										</tr>
+									</tbody>
+								</table>	
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<ng-template #content let-c="close" let-d="dismiss">
+				<div class="modal-header bg-info">
+					<h4 class="modal-title white">{{title}}</h4>
+					<button type="button" class="close white" aria-label="Close" (click)="d('Cross click')">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="kbModal-body">
+					<div id="line-area" class="height-550 lineArea">
+						<div [chart]="lineChart"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info btn-raised" (click)="c('Close click')">Close</button>
+				</div>
+			</ng-template>
+		</section>
+	</div>
+</div>
+
+
