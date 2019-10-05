@@ -149,12 +149,6 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 300);
   }
 
-  toggleHideSidebar($event: boolean): void {
-    setTimeout(() => {
-      this.hideSidebar = $event;
-    }, 0);
-  }
-
   getOptions($event): void {
     this.options = $event;
   }

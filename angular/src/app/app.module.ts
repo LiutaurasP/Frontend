@@ -6,10 +6,11 @@ import { AppRoutingModule } from "./app-routing.module";
 import { SharedModule } from "./shared/shared.module";
 import { ToastrModule } from "ngx-toastr";
 import { AgmCoreModule } from "@agm/core";
-import { HttpClientModule, HttpClient } from "@angular/common/http";
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { StoreModule } from "@ngrx/store";
+import { JwtInterceptor } from './shared/services/JwtInterceptor';
 
 import { 
   PerfectScrollbarModule, 
@@ -65,6 +66,7 @@ export function createTranslateLoader(http: HttpClient) {
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
     },
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG }
+    ,{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

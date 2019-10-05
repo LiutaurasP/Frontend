@@ -90,15 +90,13 @@ export const ROUTES: RouteInfo[] = [
             { path: '/tables/smart', title: 'Smart Tables', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
 
         ]
-    },
-    {
-        path: '', title: 'Pages', icon: 'ft-copy', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
-        submenu: [
-            { path: '/pages/forgotpassword', title: 'Forgot Password', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-            { path: '/pages/login', title: 'Login', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-            { path: '/pages/register', title: 'Register', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-            { path: '/pages/profile', title: 'User Profile', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-            { path: '/pages/error', title: 'Error', icon: '', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-        ]
-    },
+    }
+];
+
+//Sidebar menu Routes and data
+export const ROUTES_USER: RouteInfo[] = [
+    { path: '/atlas', title: 'Atlas', icon: 'ft-map', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    { path: '/faq', title: 'FAQ', icon: 'ft-book', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    { path: '/pricing', title: 'Pricing', icon: 'ft-droplet', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    { path: '/about', title: 'About', icon: 'ft-mail', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] }
 ];

@@ -1,5 +1,5 @@
 <!--Registration Page Starts-->
-<section id="regestration">
+<section id="registration">
   <div class="container-fluid">
     <div class="row full-height-vh m-0">
       <div class="col-12 d-flex align-items-center justify-content-center">
@@ -10,65 +10,41 @@
                 <div class="pt-3 px-4 bg-white">
                   <h4 class="card-title mb-2">Create Account</h4>
                   <p class="card-text mb-3">
-                    Fill the below form to create a new account.
+                    Provide a valid email to complete the registration.
                   </p>
-                  <input
-                    type="text"
-                    class="form-control mb-3"
-                    placeholder="Name"
-                  />
-                  <input
-                    type="email"
-                    class="form-control mb-3"
-                    placeholder="Email"
-                  />
-                  <input
-                    type="password"
-                    class="form-control mb-3"
-                    placeholder="Password"
-                  />
-                  <input
-                    type="password"
-                    class="form-control mb-3"
-                    placeholder="Confirm Password"
-                  />
-                  <div
-                    class="custom-control custom-checkbox custom-control-inline mb-3"
-                  >
-                    <input
-                      type="checkbox"
-                      id="customCheckboxInline1"
-                      name="customCheckboxInline1"
-                      class="custom-control-input"
-                      checked
-                    />
-                    <label
-                      class="custom-control-label"
-                      for="customCheckboxInline1"
-                    >
-                      I accept the terms & conditions.
-                    </label>
-                  </div>
-                  <div class="fg-actions d-flex justify-content-between">
-                    <div class="login-btn">
-                      <button class="btn btn-outline-primary">
-                        <a
-                          href="login-page.html"
-                          class="text-decoration-none"
-                          [routerLink]="['/pages/login']"
-                        >
-                          Back To Login
-                        </a>
-                      </button>
+                  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="username">Email</label>
+                        <input type="text" formControlName="username" class="form-control mb-3" [ngClass]="{ 'is-invalid': f.username.errors}" />
+                        <div *ngIf="f.username.errors" class="invalid-feedback">
+                            <div *ngIf="f.username.errors.required">Email is required</div>
+                        </div>
                     </div>
-                    <div class="recover-pass">
-                      <button class="btn btn-primary">
-                        <a class="text-decoration-none text-white">
-                          Register
-                        </a>
-                      </button>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" formControlName="password" class="form-control mb-3" [ngClass]="{ 'is-invalid': f.password.errors }" />
+                        <div *ngIf="f.password.errors" class="invalid-feedback">
+                            <div *ngIf="f.password.errors.required">Password is required</div>
+                            <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
+                        </div>
                     </div>
-                  </div>
+                    <div class="form-group fg-actions d-flex justify-content-between">
+                      <div class="login-btn">
+                        <button [disabled]="loading" class="btn btn-outline-primary">
+                            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                            Register
+                        </button>
+                      </div>
+                      <div class="recover-pass">
+                        <button class="btn btn-outline-primary">
+                          <a [routerLink]="['/pages/forgotpassword']" class="text-decoration-none">Recover</a>
+                        </button>
+                        <button class="btn btn-outline-primary">
+                          <a [routerLink]="['/pages/login']" class="text-decoration-none">Login</a>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>

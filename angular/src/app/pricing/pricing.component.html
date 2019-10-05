@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="content-header">User Base Differences</div>
+    <div class="content-header">Key Differences Between Access Levels</div>
     <p class="content-sub-header"></p>
   </div>
 </div>
@@ -16,31 +16,20 @@
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Limited personal use')">
-                <span class="badge bg-primary float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Limited personal use
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to baseline scenarios')">
-                <span class="badge bg-primary float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to baseline scenarios
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable baseline data')">
-                <span class="badge bg-primary float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Downloadable baseline data
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to limited series & countries')">
-                <span class="badge bg-primary float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to limited series & countries
-              </li>
+              <div *ngFor="let t_item of specs_pricing_free">
+                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                  <span class="badge  {{ t_item.feature_color }} float-left mr-2">
+                    <i class="ft-file-text text-white"></i>
+                  </span> {{ t_item.feature_name }}
+                </li>
+              </div>
             </ul>
           </div>
         </div>
         <div class="card-footer">
-          <a class="card-link primary">See all articles (20)</a>
+          <fieldset disabled>
+            <a href="javascript:void(0)" class="btn btn-primary mt-2 btn-lg btn-block btn-raised">Only registration required</a>
+          </fieldset>
         </div>
       </div>
     </div>
@@ -54,36 +43,20 @@
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Limited personal use')">
-                <span class="badge bg-danger float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Limited personal use
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Email about updates')">
-                <span class="badge bg-danger float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Email about updates
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to limited scenarios')">
-                <span class="badge bg-danger float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to limited scenarios
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable scenario data')">
-                <span class="badge bg-danger float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Downloadable scenario data
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to core series & countries')">
-                <span class="badge bg-danger float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to core series & countries
-              </li>
+              <div *ngFor="let t_item of specs_pricing_personal">
+                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                  <span class="badge  {{ t_item.feature_color }} float-left mr-2">
+                    <i class="ft-file-text text-white"></i>
+                  </span> {{ t_item.feature_name }}
+                </li>
+              </div>
             </ul>
           </div>
         </div>
         <div class="card-footer">
-          <a class="card-link primary">See all articles (13)</a>
+          <fieldset disabled>
+            <a href="javascript:void(0)" class="btn btn-danger btn-lg btn-block btn-raised">Granted to all during beta</a>
+          </fieldset>
         </div>
       </div>
     </div>
@@ -97,90 +70,36 @@
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Unconstrained usage')">
-                <span class="badge bg-grey float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Unconstrained usage
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Email about updates')">
-                <span class="badge bg-grey float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Email about updates
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to custom scenario generation')">
-                <span class="badge bg-grey float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to custom scenario generation
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Downloadable scenario data')">
-                <span class="badge bg-grey float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Downloadable scenario data
-              </li>
-              <li class="list-group-item cursor-pointer" (click)="GetDetails(content, 'Access to all covered series & countries')">
-                <span class="badge bg-grey float-left mr-2">
-                  <i class="ft-file-text text-white"></i>
-                </span> Access to all covered series & countries
-              </li>
+              <div *ngFor="let t_item of specs_pricing_pro">
+                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                  <span class="badge  {{ t_item.feature_color }} float-left mr-2">
+                    <i class="ft-file-text text-white"></i>
+                  </span> {{ t_item.feature_name }}
+                </li>
+              </div>
             </ul>
           </div>
         </div>
         <div class="card-footer">
-          <a class="card-link primary">See all articles (7)</a>
+          <fieldset disabled>
+            <a href="javascript:void(0)" class="btn btn-secondary mt-2 btn-lg btn-block btn-raised">Contact for details</a>
+          </fieldset>
         </div>
       </div>
     </div>
   </div>
 
   <ng-template #content let-c="close" let-d="dismiss">
-    <div class="modal-header bg-info">
+    <div class="modal-header {{ modal_header_color }}">
       <h4 class="modal-title white">{{title}}</h4>
       <button type="button" class="close white" aria-label="Close" (click)="d('Cross click')">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="modal-body" id="kbModal-body">
-      <p class="text-bold-500">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      <p>Test Curabitur et congue orci. Nullam tempor, lectus vitae facilisis consectetur, enim dolor sodales nunc, ut
-        venenatis
-        ipsum massa non eros. Integer tristique consequat sagittis. Sed vitae sapien lobortis, viverra turpis non,
-        hendrerit
-        erat. Vivamus luctus, nisl et dignissim pretium, quam risus sollicitudin augue, ut mollis erat neque a lectus.
-        Donec
-        et ex vitae orci pretium volutpat eget sed est. Nunc ornare mauris nunc, id ullamcorper libero finibus id.
-        Fusce
-        imperdiet laoreet suscipit. Nunc sagittis arcu non sem euismod auctor. Sed tellus odio, posuere id molestie
-        quis,
-        egestas sit amet turpis. Duis velit diam, dictum a semper eu, ultricies id neque. Integer nec eros placerat
-        lacus
-        bibendum viverra in eu urna.</p>
-      <p class="text-bold-500">Suspendisse auctor nisl interdum arcu blandit, sed aliquam leo volutpat.</p>
-      <p>Donec laoreet in nibh vel maximus. Donec posuere aliquam lacus a congue. Interdum et malesuada fames ac ante
-        ipsum
-        primis in faucibus. Aenean semper fringilla arcu, non auctor ante. Ut efficitur euismod scelerisque. Cras
-        accumsan
-        orci rhoncus elementum auctor. Phasellus maximus volutpat nunc ut tincidunt. Lorem ipsum dolor sit amet,
-        consectetur
-        adipiscing elit. Pellentesque aliquet tincidunt neque, et volutpat est dictum non. Nulla hendrerit leo sit amet
-        nisl
-        blandit, quis pharetra lacus ultrices. Etiam pretium ipsum eu dui consectetur maximus. Vivamus pretium luctus
-        lorem,
-        eu viverra velit malesuada at. Nam risus orci, gravida ut convallis et, cursus id velit.</p>
-      <p class="text-bold-500"> Phasellus maximus volutpat nunc ut tincidunt.</p>
-      <p>Donec laoreet in nibh vel maximus. Donec posuere aliquam lacus a congue. Interdum et malesuada fames ac ante
-        ipsum
-        primis in faucibus. Aenean semper fringilla arcu, non auctor ante. Ut efficitur euismod scelerisque. Cras
-        accumsan
-        orci rhoncus elementum auctor. Phasellus maximus volutpat nunc ut tincidunt. Lorem ipsum dolor sit amet,
-        consectetur
-        adipiscing elit. Pellentesque aliquet tincidunt neque, et volutpat est dictum non. Nulla hendrerit leo sit amet
-        nisl
-        blandit, quis pharetra lacus ultrices. Etiam pretium ipsum eu dui consectetur maximus. Vivamus pretium luctus
-        lorem,
-        eu viverra velit malesuada at. Nam risus orci, gravida ut convallis et, cursus id velit.</p>
+    <div class="modal-body" id="kbModal-body" [innerHTML] = this.modal_content>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-info btn-raised" (click)="c('Close click')">Close</button>
+      <button type="button" class="btn {{ modal_header_color }} btn-raised white" (click)="c('Close click')">Close</button>
     </div>
   </ng-template>
 

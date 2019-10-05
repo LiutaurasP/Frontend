@@ -107,25 +107,6 @@ export class SidebarDirective implements OnInit, AfterViewInit {
   @HostListener("window:resize", ["$event"])
   onResize(event) {
     this.innerWidth = window.innerWidth;
-    if (event.target.innerWidth < 992) {
-      this.renderer.removeClass(this.$wrapper, 'nav-collapsed');
-      this.renderer.removeClass(this.$wrapper, 'menu-collapsed');
-      this.toggleHideSidebar.emit(true);
-    }
-    if (event.target.innerWidth > 992) {
-      const toggleStatus = this.el.nativeElement
-      this.el.nativeElement.querySelector('.toggle-icon')
-        .getAttribute("data-toggle");
-      if (
-        toggleStatus === "collapsed" &&
-        this.$wrapper.classList.contains("nav-collapsed") &&
-        this.$wrapper.classList.contains("menu-collapsed")
-      ) {
-        this.$wrapper.classList.add("nav-collapsed");
-        this.$wrapper.classList.add("menu-collapsed");
-      }
-      this.toggleHideSidebar.emit(false);
-    }
   }
 
   // check outside click and close sidebar for smaller screen <992

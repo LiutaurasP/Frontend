@@ -1,15 +1,74 @@
-import { Component } from '@angular/core';
+import { Component , NgZone} from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
-import { MapChart } from 'angular-highcharts';
-import { Chart } from 'angular-highcharts';
 
 import { HttpClient } from '@angular/common/http';
 import { interval, Subscription } from 'rxjs';
 import 'rxjs/add/operator/map'
 
+import { MapChart } from 'angular-highcharts';
+import { Chart } from 'angular-highcharts';
+import { StockChart } from 'angular-highcharts';
+
+export interface World_Map_Entry{
+    country: string;
+    country_code: string;
+    updatedDate: string;
+    value: number;
+    importance: number;
+};
+
+//Plotting series
+export interface Economic_Series_Timepoints{
+    measure: string;
+    country: string;
+    variable: string;
+    format: string;
+    time: string;
+    value: number;
+};
+
+export interface Economic_Series_Values{
+    value_tm2: number;
+    value_tm1: number;
+    value_tm0: number;
+    value_tp1: number;
+    value_tp2: number;
+    
+    stamp_tm2: string;
+    stamp_tm1: string;
+    stamp_tm0: string;
+    stamp_tp1: string;
+    stamp_tp2: string;
+    
+    country: string;
+    series_name: string;
+    series_format: string;
+    last_update: string;
+};
+
+export interface Economic_Series{
+    last_updated: string;
+    series_name: string;
+    series_format: string;
+    series : Economic_Series_Values[];
+};
+
+export interface Economic_Polygon{
+    country: string;
+    variable: string;
+    horizon: string;
+    value : number;
+};
+
+export interface Economic_Cycle{
+    country: string;
+    time: string;
+    value : number;
+};
 
 declare var require: any;
 const worldMap = require('@highcharts/map-collection/custom/world.geo.json');
+
 
 @Component({
     selector: 'app-atlas',
@@ -20,69 +79,194 @@ const worldMap = require('@highcharts/map-collection/custom/world.geo.json');
 
 export class AtlasComponent {
     
-    countrySelected : string = "U.S."
+    currentCountryDetailsQoQ : Economic_Series;
+    currentCountryDetailsYoY : Economic_Series;
+    
+    worldMapData : World_Map_Entry[];
     
     //Map selector
     countrySelector = (event: any) => {
-        this.countrySelected = event.point["name"]
-        console.log(event.point["name"]);
-        console.log(event.point["hc-key"]);
+        let t_name = this.worldMapData.filter(stop => stop.country_code == event.point["country_code"])[0];
+        this.countrySelectorDrop(t_name.country);
     };
     
-    countryList: string[] = ["U.S.", "Germany", "China"];
-    //Dropdown selector
-    countrySelectorDrop(newSortOrder: string){ 
-        this.countrySelected = newSortOrder;
+    public cycleTrackerOptions: any = {
+        accessibility: {
+            description: null
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            type: 'category',
+            tickInterval: 3,
+            showLastLabel: true
+        },
+        yAxis: {
+            title: {
+                text: 'Cycle'
+            },
+            tickInterval: 1,
+            max: 4,
+            min: 1
+        },
+        legend: {
+            enabled: false,  
+        },
+        tooltip: {
+            shared: true,
+            pointFormat: '<span>Cluster:<b>{point.y:,.0f}</b><br/>'
+        },
+        series: [{
+            color: "#009DA0",
+            data: [
+                ["1998Q1", 1], 
+                ["1998Q2", 3], 
+                ["1998Q3", 3], 
+                ["1998Q4", 4], 
+                ["1999Q1", 2], 
+                ["1999Q2", 2], 
+                ["1999Q3", 1], 
+                ["1999Q4", 1], 
+                ["2000Q1", 2], 
+                ["2000Q2", 2], 
+                ["2000Q3", 4], 
+                ["2000Q4", 4],
+                ["2001Q1", 1], 
+                ["2001Q2", 3], 
+                ["2001Q3", 3], 
+                ["2001Q4", 4], 
+                ["2002Q1", 2], 
+                ["2002Q2", 2], 
+                ["2002Q3", 1], 
+                ["2002Q4", 1], 
+                ["2003Q1", 2], 
+                ["2003Q2", 2], 
+                ["2003Q3", 4], 
+                ["2003Q4", 4], 
+                ["2004Q1", 1], 
+                ["2004Q2", 3], 
+                ["2004Q3", 3], 
+                ["2004Q4", 4], 
+                ["2005Q1", 2], 
+                ["2005Q2", 2], 
+                ["2005Q3", 1], 
+                ["2005Q4", 1], 
+                ["2006Q1", 2], 
+                ["2006Q2", 2], 
+                ["2006Q3", 4], 
+                ["2006Q4", 4],
+                ["2007Q1", 1], 
+                ["2007Q2", 3], 
+                ["2007Q3", 3], 
+                ["2007Q4", 4], 
+                ["2008Q1", 2], 
+                ["2008Q2", 2], 
+                ["2008Q3", 1], 
+                ["2008Q4", 1], 
+                ["2009Q1", 2], 
+                ["2009Q2", 2], 
+                ["2009Q3", 4]
+                ]
+        }]
     }
     
+    public keyCategoriesOptions: any = {
+        chart: {
+            polar: true,
+        },
+    
+        accessibility: {
+            description: null
+        },
+    
+        title: {
+            text: ""
+        },
+    
+        pane: {
+            size: '75%'
+        },
+    
+        xAxis: {
+            categories: ['Growth', 'Prices', 'Production', 'Consumption', 'Trade', 'Labour'],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+    
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+    
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+        },
+    
+        legend: {
+            align: 'center',
+            verticalAlign: 'bottom'
+        },
+    
+        series: [{
+            name: 'Last Month',
+            type: 'line',
+            color: "#A00300",
+            data: [70, 120, 140, 80, 60, 20],
+            pointPlacement: 'on'
+        },{
+            name: 'Now',
+            type: 'line',
+            color: "#000000",
+            data: [100, 100, 100, 100, 100, 100],
+            pointPlacement: 'on'
+        },{
+            name: 'Next Month',
+            type: 'line',
+            color: "#009DA0",
+            data: [120, 110, 120, 80, 60, 20],
+            pointPlacement: 'on'
+        }]
+    };
+
     public lineOptions: any = {
             chart: {
-                height: 500,
-                width: 800
             },
             title: {
-                text: 'Solar Employment Growth by Sector, 2010-2016'
+                text: null
             },
-        
-            subtitle: {
-                text: 'Source: thesolarfoundation.com'
+            rangeSelector: {
+                enabled:false
             },
-        
             yAxis: {
                 title: {
-                    text: 'Number of Employees'
+                    text: "Annualized Change & Uncertainty"
                 }
             },
+
+            tooltip: {
+                crosshairs: true,
+                shared: true
+            },
+
             legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle'
+                enabled: false
             },
-        
-            plotOptions: {
-                series: {
-                    label: {
-                        connectorAllowed: false
-                    },
-                    pointStart: 2010
-                }
-            },
-        
+
             series: [{
-                name: 'Installation',
-                data: [1, 2, 3, 4, 5, 6, 7, 8]
+                name: 'Growth',
+                color: "#000000",
+                data: []
             }, {
-                name: 'Manufacturing',
-                data: [11, 21, 31, 41, 51, 61, 71, 81]
-            }, {
-                name: 'Sales & Distribution',
-                data: [21, 22, 23, 24, 25, 26, 27, 28]
-            }, {
-                name: 'Project Development',
-                data: [44, 55, 66, 77, 11, 88, 11, 33]
-            }, {
-                name: 'Other',
-                data: [90, 72, 122, 141, 65, 71, 23, 41]
+                name: 'Lower',
+                color: "#009DA0",
+                data: []
+            },{
+                name: 'Upper',
+                color: "#009DA0",
+                data: []
             }]
     };
 
@@ -101,27 +285,16 @@ export class AtlasComponent {
             crosshair: true
         },
         chart: {
-            map: worldMap,
             height: 600,
-            spacingLeft: 0
-
+            spacingLeft: 0,
+            map: worldMap
         },
         mapNavigation: {
           enabled: true,
           enableMouseWheelZoom: false,
           buttonOptions: {
             alignTo: 'spacingBox'
-          },
-          buttons: {
-                zoomIn: {
-                    // the lower the value, the greater the zoom in
-                    onclick: function () { this.mapZoom(0.5); }
-                },
-                zoomOut: {
-                    // the higher the value, the greater the zoom out
-                    onclick: function () { this.mapZoom(1.5); }
-                }
-            }
+          }
         },
         colorAxis: {
           min: 0
@@ -155,278 +328,182 @@ export class AtlasComponent {
             },
             name: "Real Growth",
             allAreas: true,
-            data: [
-                ['fo', 0],
-                ['um', 1],
-                ['us', 2],
-                ['jp', 3],
-                ['sc', 4],
-                ['in', 5],
-                ['fr', 6],
-                ['fm', 7],
-                ['cn', 8],
-                ['pt', 9],
-                ['sw', 10],
-                ['sh', 11],
-                ['br', 12],
-                ['ki', 13],
-                ['ph', 14],
-                ['mx', 15],
-                ['es', 16],
-                ['bu', 17],
-                ['mv', 18],
-                ['sp', 19],
-                ['gb', 20],
-                ['gr', 21],
-                ['as', 22],
-                ['dk', 23],
-                ['gl', 24],
-                ['gu', 25],
-                ['mp', 26],
-                ['pr', 27],
-                ['vi', 28],
-                ['ca', 29],
-                ['st', 30],
-                ['cv', 31],
-                ['dm', 32],
-                ['nl', 33],
-                ['jm', 34],
-                ['ws', 35],
-                ['om', 36],
-                ['vc', 37],
-                ['tr', 38],
-                ['bd', 39],
-                ['lc', 40],
-                ['nr', 41],
-                ['no', 42],
-                ['kn', 43],
-                ['bh', 44],
-                ['to', 45],
-                ['fi', 46],
-                ['id', 47],
-                ['mu', 48],
-                ['se', 49],
-                ['tt', 50],
-                ['my', 51],
-                ['pa', 52],
-                ['pw', 53],
-                ['tv', 54],
-                ['mh', 55],
-                ['cl', 56],
-                ['th', 57],
-                ['gd', 58],
-                ['ee', 59],
-                ['ag', 60],
-                ['tw', 61],
-                ['bb', 62],
-                ['it', 63],
-                ['mt', 64],
-                ['vu', 65],
-                ['sg', 66],
-                ['cy', 67],
-                ['lk', 68],
-                ['km', 69],
-                ['fj', 70],
-                ['ru', 71],
-                ['va', 72],
-                ['sm', 73],
-                ['kz', 74],
-                ['az', 75],
-                ['tj', 76],
-                ['ls', 77],
-                ['uz', 78],
-                ['ma', 79],
-                ['co', 80],
-                ['tl', 81],
-                ['tz', 82],
-                ['ar', 83],
-                ['sa', 84],
-                ['pk', 85],
-                ['ye', 86],
-                ['ae', 87],
-                ['ke', 88],
-                ['pe', 89],
-                ['do', 90],
-                ['ht', 91],
-                ['pg', 92],
-                ['ao', 93],
-                ['kh', 94],
-                ['vn', 95],
-                ['mz', 96],
-                ['cr', 97],
-                ['bj', 98],
-                ['ng', 99],
-                ['ir', 100],
-                ['sv', 101],
-                ['sl', 102],
-                ['gw', 103],
-                ['hr', 104],
-                ['bz', 105],
-                ['za', 106],
-                ['cf', 107],
-                ['sd', 108],
-                ['cd', 109],
-                ['kw', 110],
-                ['de', 111],
-                ['be', 112],
-                ['ie', 113],
-                ['kp', 114],
-                ['kr', 115],
-                ['gy', 116],
-                ['hn', 117],
-                ['mm', 118],
-                ['ga', 119],
-                ['gq', 120],
-                ['ni', 121],
-                ['lv', 122],
-                ['ug', 123],
-                ['mw', 124],
-                ['am', 125],
-                ['sx', 126],
-                ['tm', 127],
-                ['zm', 128],
-                ['nc', 129],
-                ['mr', 130],
-                ['dz', 131],
-                ['lt', 132],
-                ['et', 133],
-                ['er', 134],
-                ['gh', 135],
-                ['si', 136],
-                ['gt', 137],
-                ['ba', 138],
-                ['jo', 139],
-                ['sy', 140],
-                ['mc', 141],
-                ['al', 142],
-                ['uy', 143],
-                ['cnm', 144],
-                ['mn', 145],
-                ['rw', 146],
-                ['so', 147],
-                ['bo', 148],
-                ['cm', 149],
-                ['cg', 150],
-                ['eh', 151],
-                ['rs', 152],
-                ['me', 153],
-                ['tg', 154],
-                ['la', 155],
-                ['af', 156],
-                ['ua', 157],
-                ['sk', 158],
-                ['jk', 159],
-                ['bg', 160],
-                ['qa', 161],
-                ['li', 162],
-                ['at', 163],
-                ['sz', 164],
-                ['hu', 165],
-                ['ro', 166],
-                ['ne', 167],
-                ['lu', 168],
-                ['ad', 169],
-                ['ci', 170],
-                ['lr', 171],
-                ['bn', 172],
-                ['iq', 173],
-                ['ge', 174],
-                ['gm', 175],
-                ['ch', 176],
-                ['td', 177],
-                ['kv', 178],
-                ['lb', 179],
-                ['dj', 180],
-                ['bi', 181],
-                ['sr', 182],
-                ['il', 183],
-                ['ml', 184],
-                ['sn', 185],
-                ['gn', 186],
-                ['zw', 187],
-                ['pl', 188],
-                ['mk', 189],
-                ['py', 190],
-                ['by', 191],
-                ['cz', 192],
-                ['bf', 193],
-                ['na', 194],
-                ['ly', 195],
-                ['tn', 196],
-                ['bt', 197],
-                ['md', 198],
-                ['ss', 199],
-                ['bw', 200],
-                ['bs', 201],
-                ['nz', 202],
-                ['cu', 203],
-                ['ec', 204],
-                ['au', 205],
-                ['ve', 206],
-                ['sb', 207],
-                ['mg', 208],
-                ['is', 209],
-                ['eg', 210],
-                ['kg', 211],
-                ['np', 212]
-            ]
+            data: [],
+            mapData: worldMap,
+            joinBy: ['iso-a2', 'country_code']
         }]
     };
     
-    title: string;
-    
-    GetDetails(content, titleText) {
-        this.title = titleText;
-            this.modalService.open(content, { size: 'lg' }).result.then((result) => {      
-            }, (reason) => {     
-        });
-    }
-    
     mapChart : any;
     lineChart : any;
+    mapKey : any;
+    cycleTracker : any;
     
     subscription: Subscription;
-    constructor(private http: HttpClient, private modalService: NgbModal) { }
+    
+    constructor(private http: HttpClient, private modalService: NgbModal) { 
+    }
+    
+
   
     ngOnInit(){
-        this.mapChart = new MapChart(this.mapOptions);
-        
-        const source = interval(600000);
-        const apiLink = 'https://f55607903aab4c95b714acd1bc11cb7f.vfs.cloud9.eu-west-1.amazonaws.com/assets/temp/line.json';
-        this.http.get<any[]>(apiLink).subscribe(
-            res => {
-                const data_install = [];
-                const data_manu = [];
-                const data_other = [];
-                const data_project = [];
-                const data_sales = [];
-                const data_TS = [];
-                res.forEach(row => {
-                    data_install.push(row.Installation);
-                    data_manu.push(row.Manufacturing);
-                    data_other.push(row.Other);
-                    data_project.push(row.Project);
-                    data_sales.push(row.Sales);
-                    data_TS.push(row.Timestamp);
-                });
-                this.lineOptions.series[0]['data'] = data_install;
-                this.lineOptions.series[1]['data'] = data_manu;
-                this.lineOptions.series[2]['data'] = data_other;
-                this.lineOptions.series[3]['data'] = data_project;
-                this.lineOptions.series[4]['data'] = data_sales;
-                this.lineChart = new Chart(this.lineOptions);
-                 /*
-                    const temp_row = [
-                        new Date(row.timestamp).getTime(),
-                        row.value
-                    ];
-                });
-                */
-
-            },
-            err => {
-                console.log(err);
+        //Load world map data
+        this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world')
+            .subscribe((data_details: World_Map_Entry[]) => {
+                this.mapOptions.series[0].data = data_details;
+                this.mapChart = new MapChart(this.mapOptions);
+                this.countryList = new Array<string>();
+                for(var t_stop of data_details){
+                    this.countryList.push(t_stop.country);
+                }
+                this.worldMapData = data_details;
+                this.countrySelectorDrop(this.countryList[0]);
+            });
+    }
+    
+    countryList: string[];
+    countrySelected : string = "test"
+    //Dropdown selector
+    countrySelectorDrop(newSortOrder: string){ 
+        this.currentCountryDetailsQoQ = null;
+        this.currentCountryDetailsYoY = null;
+        this.mapKey = null;
+        this.cycleTracker = null;
+        this.http.get<Economic_Series_Values[]>('https://api.alphahuntsman.com/atlas/country?country='+newSortOrder)
+         .subscribe((data_details: Economic_Series_Values[]) => {
+            //Get distinct variables
+            var t_variables = new Array<string>();
+            for (var t_stop of data_details){
+                if(!t_variables.includes(t_stop.series_name)){
+                    t_variables.push(t_stop.series_name);
+                }
             }
-        );
+            //By Variable
+            for (var t_name of t_variables){
+                //Find qoq
+                let qoq_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "QoQ")[0];
+                let yoy_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "YoY")[0];
+                if(!this.currentCountryDetailsQoQ){
+                    this.currentCountryDetailsQoQ = {
+                        last_updated : new Date(qoq_data.last_update).toISOString().slice(0,10),
+                        series_name: t_name,
+                        series_format: qoq_data.series_format,
+                        series: new Array<Economic_Series_Values>()
+                    };
+                }
+                if(!this.currentCountryDetailsYoY){
+                    this.currentCountryDetailsYoY = {
+                        last_updated : new Date(yoy_data.last_update).toISOString().slice(0,10),
+                        series_name: t_name,
+                        series_format: yoy_data.series_format,
+                        series: new Array<Economic_Series_Values>()
+                    };
+                }
+                this.currentCountryDetailsQoQ.series.push(qoq_data);
+                this.currentCountryDetailsYoY.series.push(yoy_data);
+            }
+            //Refresh country details
+            this.countrySelected = newSortOrder;
+            //Setting details
+            let country_name = this.worldMapData.filter(stop => stop.country == newSortOrder)[0].country_code;
+            this.http.get<Economic_Polygon[]>('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name)
+                 .subscribe((data_details: Economic_Polygon[]) => {
+                    const temp_horizon_list = ['Before','Now','Future'];
+                    const temp_category_list = ['Growth', 'Prices', 'Production', 'Consumption', 'Trade', 'Labour'];
+                    let t_loop_counter = 0;
+                    for(var t_cate_horizon of temp_horizon_list){
+                        const temp_data_values = [];
+                        for(var t_cate_stop of temp_category_list){
+                            temp_data_values.push(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon)[0].value);
+                        }
+                        this.keyCategoriesOptions.series[t_loop_counter].data = temp_data_values;
+                        t_loop_counter += 1;
+                    }
+                    this.mapKey = new Chart(this.keyCategoriesOptions);
+                 });
+            //Setting cycle data
+            this.http.get<Economic_Cycle[]>('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name)
+                 .subscribe((data_details: Economic_Cycle[]) => {
+                    const temp_data_values = [];
+                    for(var t_entry of data_details){
+                        temp_data_values.push([t_entry.time,t_entry.value]);
+                    }
+                    this.cycleTrackerOptions.series[0].data = temp_data_values;
+                    this.cycleTracker = new Chart(this.cycleTrackerOptions);
+                 });
+         });
+    }
+
+    
+    modal_data_mean : Economic_Series_Timepoints[];
+    modal_data_upper : Economic_Series_Timepoints[];
+    modal_data_lower : Economic_Series_Timepoints[];
+    
+    //Modal details
+    title: string;
+    GetDetails(content, t_variable, data_format) {
+        this.modal_data_mean = null;
+        this.modal_data_upper = null;
+        this.modal_data_lower = null;
+        this.http.get<Economic_Series_Timepoints[]>('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format)
+             .subscribe((data_details: Economic_Series_Timepoints[]) => {
+                this.modal_data_mean = data_details.filter(temp => temp.measure == "Mean");
+                this.modal_data_upper = data_details.filter(temp => temp.measure == "Upper");
+                this.modal_data_lower = data_details.filter(temp => temp.measure == "Lower");
+                //Sort to plot
+                const lineplot_data_mean = [];
+                const lineplot_data_upper = [];
+                const lineplot_data_lower = [];
+                for(var t_inner of this.modal_data_mean){
+                    if(data_format == "QoQ"){
+                        let temp_year = t_inner.time.split("Q")[0]
+                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
+                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_mean.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }else{
+                        let temp_unix = new Date(t_inner.time+"-01-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_mean.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }
+                };
+                //Upper values
+                for(var t_inner of this.modal_data_upper){
+                    if(data_format == "QoQ"){
+                        let temp_year = t_inner.time.split("Q")[0]
+                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
+                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_upper.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }else{
+                        let temp_unix = new Date(t_inner.time+"-01-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_upper.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }
+                };
+                //Lower values
+                for(var t_inner of this.modal_data_lower){
+                    if(data_format == "QoQ"){
+                        let temp_year = t_inner.time.split("Q")[0]
+                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
+                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_lower.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }else{
+                        let temp_unix = new Date(t_inner.time+"-01-01");
+                        let temp_unix_no = temp_unix.getTime()
+                        lineplot_data_lower.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+                    }
+                };
+                this.lineChart = new StockChart(this.lineOptions);
+                this.lineOptions.series[0].data = lineplot_data_mean;
+                this.lineOptions.series[1].data = lineplot_data_lower;
+                this.lineOptions.series[2].data = lineplot_data_upper;
+                //Final model activation
+                this.title = t_variable + " " + data_format;
+                this.modalService.open(content, {windowClass : "myCustomModalClass"}).result.then((result) => {      
+                    }, (reason) => {     
+                });
+             });
     }
 }

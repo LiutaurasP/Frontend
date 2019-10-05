@@ -12,63 +12,46 @@
                   <p class="card-text mb-3">
                     Welcome back, please login to your account.
                   </p>
-                  <input
-                    type="text"
-                    class="form-control mb-3"
-                    placeholder="Username"
-                  />
-                  <input
-                    type="password"
-                    class="form-control mb-3"
-                    placeholder="Password"
-                  />
-                  <div class="d-flex justify-content-between mt-2">
-                    <div class="remember-me">
-                      <div
-                        class="custom-control custom-checkbox custom-control-inline mb-3"
-                      >
-                        <input
-                          type="checkbox"
-                          id="customCheckboxInline1"
-                          name="customCheckboxInline1"
-                          class="custom-control-input"
-                        />
-                        <label
-                          class="custom-control-label"
-                          for="customCheckboxInline1"
-                        >
-                          Remember Me
-                        </label>
+                  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                    
+                    <div class="form-group">
+                        <label for="username">Email</label>
+                        <input type="text" formControlName="username" class="form-control mb-3" [ngClass]="{ 'is-invalid': f.username.errors }" />
+                        <div *ngIf="f.username.errors" class="invalid-feedback">
+                            <div *ngIf="f.username.errors.required">Email is required</div>
+                        </div>
+                        <div *ngIf="flagDoneValidates">
+                            <div *ngIf="flagDoneValidates">Validate email first!</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" formControlName="password" class="form-control mb-3" [ngClass]="{ 'is-invalid': f.password.errors }" />
+                        <div *ngIf="f.password.errors" class="invalid-feedback">
+                            <div *ngIf="f.password.errors.required">Password is required</div>
+                        </div>
+                        <div *ngIf="flagDoneValidates">
+                            <div *ngIf="flagDoneValidates">Validate email first!</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group fg-actions d-flex justify-content-between">
+                      <div class="login-btn">
+                        <button [disabled]="loading" class="btn btn-outline-primary">
+                            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                            Login
+                        </button>
+                      </div>
+                      <div class="recover-pass">
+                        <button class="btn btn-outline-primary">
+                          <a [routerLink]="['/pages/forgotpassword']" class="text-decoration-none">Recover</a>
+                        </button>
+                        <button class="btn btn-outline-primary">
+                          <a [routerLink]="['/pages/register']" class="text-decoration-none">Register</a>
+                        </button>
                       </div>
                     </div>
-                    <div class="forgot-password-option">
-                      <a
-                        [routerLink]="['/pages/forgotpassword']"
-                        class="text-decoration-none text-primary"
-                        >Forgot Password ?</a
-                      >
-                    </div>
-                  </div>
-                  <div class="fg-actions d-flex justify-content-between">
-                    <div class="login-btn">
-                      <button class="btn btn-outline-primary">
-                        <a
-                          [routerLink]="['/pages/register']"
-                          class="text-decoration-none"
-                          >Register</a
-                        >
-                      </button>
-                    </div>
-                    <div class="recover-pass">
-                      <button class="btn btn-primary">
-                        <a
-                          [routerLink]="['/pages/login']"
-                          class="text-decoration-none text-white"
-                          >Login</a
-                        >
-                      </button>
-                    </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>

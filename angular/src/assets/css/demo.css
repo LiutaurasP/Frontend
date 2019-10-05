@@ -84,3 +84,13 @@ my-app .main-panel .main-content .card{
 .tim-row h3{
     margin-top: 0;
 }
+
+.myCustomModalClass .modal-dialog {
+    max-width: calc(100vw);
+    max-height: calc(40vw);
+    position: relative;
+}
+
+.myCustomModalClass .modal-body {
+    overflow: hidden !important;
+}

@@ -7,9 +7,8 @@
 			<div class="card-content">
 				<div class="card-body">
 					<div class="chart-info mb-3 ml-3">
-						Annual growth around the world
 					</div>
-					<div id="line-area" class="height-650 lineArea">
+					<div id="line-area" *ngIf="countryList" class="height-650 lineArea">
     					<div [chart]="mapChart"></div>
 					</div>
 				</div>
@@ -32,69 +31,54 @@
 								</div>
 							</div>
 						</div>
-						<div class="card-content">
-							<div class="card-body">
+						<div class="card-content" *ngIf="currentCountryDetailsQoQ">
+							<div class="card-body" *ngIf="currentCountryDetailsQoQ.series">
+								<div class="row">
+									<div class="col-5">
+										<div *ngIf="mapKey" [chart]="mapKey"></div>
+									</div>
+									<div class="col-7">
+										<div *ngIf="cycleTracker" [chart]="cycleTracker"></div>
+									</div>
+								</div>
 								<table class="table table-sm">
 									<thead>
-										<tr>
-											<th><a (click)="GetDetails(content, 'Growth')" class="card-link primary">Growth</a>
-											</th>
-											<th>2019Q1</th>
-											<th>2019Q2</th>
-											<th>2019Q3</th>
-											<th>2018</th>
-											<th>2019</th>
-											<th>2020</th>
+										<tr *ngIf="currentCountryDetailsQoQ.series[0]">
+											<th>{{currentCountryDetailsQoQ.series_format}}</th>
+											<th>{{currentCountryDetailsQoQ.series[0].stamp_tm2}}</th>
+											<th>{{currentCountryDetailsQoQ.series[0].stamp_tm1}}</th>
+											<th>{{currentCountryDetailsQoQ.series[0].stamp_tm0}}</th>
+											<th>{{currentCountryDetailsQoQ.series[0].stamp_tp1}}</th>
+											<th>{{currentCountryDetailsQoQ.series[0].stamp_tp2}}</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<th scope="row">QoQ</th>
-											<td>1.21%</td>
-											<td>2.21%</td>
-											<td>3.21%</td>
-											<td>4.21%</td>
-											<td>5.21%</td>
-											<td>6.21%</td>
+										<tr *ngFor="let t_item_d of currentCountryDetailsQoQ.series">
+											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
+											<td>{{t_item_d.value_tm2}}</td>
+											<td>{{t_item_d.value_tm1}}</td>
+											<td>{{t_item_d.value_tm0}}</td>
+											<td>{{t_item_d.value_tp1}}</td>
+											<td>{{t_item_d.value_tp2}}</td>
 										</tr>
-										<tr>
-											<th scope="row">YoY</th>
-											<td>7.21%</td>
-											<td>8.21%</td>
-											<td>9.21%</td>
-											<td>10.21%</td>
-											<td>11.21%</td>
-											<td>12.21%</td>
+										<tr *ngIf="currentCountryDetailsYoY.series[0]">
+											<th>{{currentCountryDetailsYoY.series_format}}</th>
+											<th>{{currentCountryDetailsYoY.series[0].stamp_tm2}}</th>
+											<th>{{currentCountryDetailsYoY.series[0].stamp_tm1}}</th>
+											<th>{{currentCountryDetailsYoY.series[0].stamp_tm0}}</th>
+											<th>{{currentCountryDetailsYoY.series[0].stamp_tp1}}</th>
+											<th>{{currentCountryDetailsYoY.series[0].stamp_tp2}}</th>
 										</tr>
-										<tr>
-											<th scope="row"><a class="card-link primary">Deflator</a></th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-										<tr>
-											<th scope="row">QoQ</th>
-											<td>1.21%</td>
-											<td>2.21%</td>
-											<td>3.21%</td>
-											<td>4.21%</td>
-											<td>5.21%</td>
-											<td>6.21%</td>
-										</tr>
-										<tr>
-											<th scope="row">YoY</th>
-											<td>7.21%</td>
-											<td>8.21%</td>
-											<td>9.21%</td>
-											<td>10.21%</td>
-											<td>11.21%</td>
-											<td>12.21%</td>
+										<tr *ngFor="let t_item_d of currentCountryDetailsYoY.series">
+											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
+											<td>{{t_item_d.value_tm2}}</td>
+											<td>{{t_item_d.value_tm1}}</td>
+											<td>{{t_item_d.value_tm0}}</td>
+											<td>{{t_item_d.value_tp1}}</td>
+											<td>{{t_item_d.value_tp2}}</td>
 										</tr>
 									</tbody>
-								</table>	
+								</table>		
 							</div>
 						</div>
 					</div>
@@ -102,19 +86,19 @@
 			</div>
 			
 			<ng-template #content let-c="close" let-d="dismiss">
-				<div class="modal-header bg-info">
+				<div class="modal-header bg-primary">
 					<h4 class="modal-title white">{{title}}</h4>
 					<button type="button" class="close white" aria-label="Close" (click)="d('Cross click')">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body" id="kbModal-body">
-					<div id="line-area" class="height-550 lineArea">
+					<div id="line-area" class="lineArea" *ngIf="modal_data_mean">
 						<div [chart]="lineChart"></div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-info btn-raised" (click)="c('Close click')">Close</button>
+					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>
 				</div>
 			</ng-template>
 		</section>
