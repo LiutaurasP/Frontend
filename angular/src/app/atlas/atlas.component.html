@@ -32,15 +32,10 @@
 							</div>
 						</div>
 						<div class="card-content" *ngIf="currentCountryDetailsQoQ">
+							<div class="card-header">
+								Refreshed at: <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span>
+							</div>
 							<div class="card-body" *ngIf="currentCountryDetailsQoQ.series">
-								<div class="row">
-									<div class="col-5">
-										<div *ngIf="mapKey" [chart]="mapKey"></div>
-									</div>
-									<div class="col-7">
-										<div *ngIf="cycleTracker" [chart]="cycleTracker"></div>
-									</div>
-								</div>
 								<table class="table table-sm">
 									<thead>
 										<tr *ngIf="currentCountryDetailsQoQ.series[0]">
@@ -61,6 +56,10 @@
 											<td>{{t_item_d.value_tp1}}</td>
 											<td>{{t_item_d.value_tp2}}</td>
 										</tr>
+									</tbody>
+								</table>
+								<table class="table table-sm" *ngIf="currentCountryDetailsYoY.series">
+									<thead>
 										<tr *ngIf="currentCountryDetailsYoY.series[0]">
 											<th>{{currentCountryDetailsYoY.series_format}}</th>
 											<th>{{currentCountryDetailsYoY.series[0].stamp_tm2}}</th>
@@ -69,6 +68,8 @@
 											<th>{{currentCountryDetailsYoY.series[0].stamp_tp1}}</th>
 											<th>{{currentCountryDetailsYoY.series[0].stamp_tp2}}</th>
 										</tr>
+									</thead>
+									<tbody>
 										<tr *ngFor="let t_item_d of currentCountryDetailsYoY.series">
 											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
 											<td>{{t_item_d.value_tm2}}</td>
@@ -78,7 +79,16 @@
 											<td>{{t_item_d.value_tp2}}</td>
 										</tr>
 									</tbody>
-								</table>		
+								</table>
+								<div class="row">
+									<div class="col-5">
+										<div *ngIf="flag_factors" [chart]="mapKey"></div>
+									</div>
+									<div class="col-7">
+										<div *ngIf="flag_cycles" [chart]="cycleTracker"></div>
+									</div>
+								</div>
+
 							</div>
 						</div>
 					</div>

@@ -90,6 +90,9 @@ export class AtlasComponent {
         this.countrySelectorDrop(t_name.country);
     };
     
+    flag_cycles = null
+    flag_factors = null
+    
     public cycleTrackerOptions: any = {
         accessibility: {
             description: null
@@ -99,7 +102,7 @@ export class AtlasComponent {
         },
         xAxis: {
             type: 'category',
-            tickInterval: 3,
+            tickInterval: 1,
             showLastLabel: true
         },
         yAxis: {
@@ -107,7 +110,7 @@ export class AtlasComponent {
                 text: 'Cycle'
             },
             tickInterval: 1,
-            max: 4,
+            max: 5,
             min: 1
         },
         legend: {
@@ -120,53 +123,7 @@ export class AtlasComponent {
         series: [{
             color: "#009DA0",
             data: [
-                ["1998Q1", 1], 
-                ["1998Q2", 3], 
-                ["1998Q3", 3], 
-                ["1998Q4", 4], 
-                ["1999Q1", 2], 
-                ["1999Q2", 2], 
-                ["1999Q3", 1], 
-                ["1999Q4", 1], 
-                ["2000Q1", 2], 
-                ["2000Q2", 2], 
-                ["2000Q3", 4], 
-                ["2000Q4", 4],
-                ["2001Q1", 1], 
-                ["2001Q2", 3], 
-                ["2001Q3", 3], 
-                ["2001Q4", 4], 
-                ["2002Q1", 2], 
-                ["2002Q2", 2], 
-                ["2002Q3", 1], 
-                ["2002Q4", 1], 
-                ["2003Q1", 2], 
-                ["2003Q2", 2], 
-                ["2003Q3", 4], 
-                ["2003Q4", 4], 
-                ["2004Q1", 1], 
-                ["2004Q2", 3], 
-                ["2004Q3", 3], 
-                ["2004Q4", 4], 
-                ["2005Q1", 2], 
-                ["2005Q2", 2], 
-                ["2005Q3", 1], 
-                ["2005Q4", 1], 
-                ["2006Q1", 2], 
-                ["2006Q2", 2], 
-                ["2006Q3", 4], 
-                ["2006Q4", 4],
-                ["2007Q1", 1], 
-                ["2007Q2", 3], 
-                ["2007Q3", 3], 
-                ["2007Q4", 4], 
-                ["2008Q1", 2], 
-                ["2008Q2", 2], 
-                ["2008Q3", 1], 
-                ["2008Q4", 1], 
-                ["2009Q1", 2], 
-                ["2009Q2", 2], 
-                ["2009Q3", 4]
+                ["1998Q1", 1]
                 ]
         }]
     }
@@ -345,17 +302,22 @@ export class AtlasComponent {
     }
     
 
-  
+    selectedScenario: any;
+    refreshDate: any;
+
     ngOnInit(){
+        this.selectedScenario = "Baseline";
         //Load world map data
-        this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world')
+        this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world?scenario='+this.selectedScenario)
             .subscribe((data_details: World_Map_Entry[]) => {
                 this.mapOptions.series[0].data = data_details;
                 this.mapChart = new MapChart(this.mapOptions);
                 this.countryList = new Array<string>();
                 for(var t_stop of data_details){
                     this.countryList.push(t_stop.country);
+                    this.refreshDate = t_stop.updatedDate;
                 }
+                this.refreshDate = new Date(this.refreshDate);
                 this.worldMapData = data_details;
                 this.countrySelectorDrop(this.countryList[0]);
             });
@@ -369,7 +331,8 @@ export class AtlasComponent {
         this.currentCountryDetailsYoY = null;
         this.mapKey = null;
         this.cycleTracker = null;
-        this.http.get<Economic_Series_Values[]>('https://api.alphahuntsman.com/atlas/country?country='+newSortOrder)
+        //table data
+        this.http.get<Economic_Series_Values[]>('https://api.alphahuntsman.com/atlas/country?country='+newSortOrder+'&scenario='+this.selectedScenario)
          .subscribe((data_details: Economic_Series_Values[]) => {
             //Get distinct variables
             var t_variables = new Array<string>();
@@ -381,9 +344,10 @@ export class AtlasComponent {
             //By Variable
             for (var t_name of t_variables){
                 //Find qoq
-                let qoq_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "QoQ")[0];
+                let qoq_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "QoQ AR")[0];
                 let yoy_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "YoY")[0];
-                if(!this.currentCountryDetailsQoQ){
+                //console.log(data_details[0]);
+                if(!this.currentCountryDetailsQoQ && qoq_data){
                     this.currentCountryDetailsQoQ = {
                         last_updated : new Date(qoq_data.last_update).toISOString().slice(0,10),
                         series_name: t_name,
@@ -391,7 +355,7 @@ export class AtlasComponent {
                         series: new Array<Economic_Series_Values>()
                     };
                 }
-                if(!this.currentCountryDetailsYoY){
+                if(!this.currentCountryDetailsYoY && yoy_data){
                     this.currentCountryDetailsYoY = {
                         last_updated : new Date(yoy_data.last_update).toISOString().slice(0,10),
                         series_name: t_name,
@@ -399,39 +363,53 @@ export class AtlasComponent {
                         series: new Array<Economic_Series_Values>()
                     };
                 }
-                this.currentCountryDetailsQoQ.series.push(qoq_data);
-                this.currentCountryDetailsYoY.series.push(yoy_data);
+                if(qoq_data){
+                    this.currentCountryDetailsQoQ.series.push(qoq_data);
+                }
+                if(yoy_data){
+                    this.currentCountryDetailsYoY.series.push(yoy_data);
+                }
             }
-            //Refresh country details
-            this.countrySelected = newSortOrder;
-            //Setting details
-            let country_name = this.worldMapData.filter(stop => stop.country == newSortOrder)[0].country_code;
-            this.http.get<Economic_Polygon[]>('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name)
-                 .subscribe((data_details: Economic_Polygon[]) => {
-                    const temp_horizon_list = ['Before','Now','Future'];
-                    const temp_category_list = ['Growth', 'Prices', 'Production', 'Consumption', 'Trade', 'Labour'];
-                    let t_loop_counter = 0;
-                    for(var t_cate_horizon of temp_horizon_list){
-                        const temp_data_values = [];
-                        for(var t_cate_stop of temp_category_list){
-                            temp_data_values.push(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon)[0].value);
-                        }
-                        this.keyCategoriesOptions.series[t_loop_counter].data = temp_data_values;
-                        t_loop_counter += 1;
-                    }
-                    this.mapKey = new Chart(this.keyCategoriesOptions);
-                 });
-            //Setting cycle data
-            this.http.get<Economic_Cycle[]>('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name)
-                 .subscribe((data_details: Economic_Cycle[]) => {
-                    const temp_data_values = [];
-                    for(var t_entry of data_details){
-                        temp_data_values.push([t_entry.time,t_entry.value]);
-                    }
-                    this.cycleTrackerOptions.series[0].data = temp_data_values;
-                    this.cycleTracker = new Chart(this.cycleTrackerOptions);
-                 });
          });
+    
+        //factor data
+        //Refresh country details
+        this.countrySelected = newSortOrder;
+        //Setting details
+        let country_name = this.worldMapData.filter(stop => stop.country == newSortOrder)[0].country_code;
+        this.flag_factors = false;
+        console.log('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario);
+        this.http.get<Economic_Polygon[]>('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
+             .subscribe((data_details: Economic_Polygon[]) => {
+                const temp_horizon_list = ['Before','Now','Future'];
+                const temp_category_list = ['Growth', 'Prices', 'Production', 'Consumption', 'Trade', 'Labour'];
+                let t_loop_counter = 0;
+                for(var t_cate_horizon of temp_horizon_list){
+                    const temp_data_values = [];
+                    for(var t_cate_stop of temp_category_list){
+                        if(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon).length > 0){
+                            temp_data_values.push(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon)[0].value);
+                            this.flag_factors = true;
+                        }
+                    }
+                    this.keyCategoriesOptions.series[t_loop_counter].data = temp_data_values;
+                    t_loop_counter += 1;
+                }
+                this.mapKey = new Chart(this.keyCategoriesOptions);
+             });
+        //Setting cycle data
+        this.flag_cycles = false;
+        console.log('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
+        this.http.get<Economic_Cycle[]>('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
+             .subscribe((data_details: Economic_Cycle[]) => {
+                const temp_data_values = [];
+                for(var t_entry of data_details){
+                    temp_data_values.push([t_entry.time,t_entry.value]);
+                    this.flag_cycles = true;
+                }
+                this.cycleTrackerOptions.series[0].data = temp_data_values;
+                this.cycleTracker = new Chart(this.cycleTrackerOptions);
+             });
     }
 
     
