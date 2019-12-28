@@ -4,8 +4,8 @@
   [ngClass]="{
     'nav-collapsed': iscollapsed,
     'menu-collapsed': iscollapsed,
-    'sidebar-sm': isSidebar_sm,
-    'sidebar-lg': isSidebar_lg
+    'sidebar-m': isSidebar_m,
+    'sidebar-sm': isSidebar_sm
   }"
   [dir]="options.direction"
 >
@@ -21,7 +21,6 @@
     <app-sidebar></app-sidebar>
     <div class="sidebar-background" #sidebarBgImage></div>
   </div>
-  <app-navbar (toggleHideSidebar)="toggleHideSidebar($event)"></app-navbar>
   <div class="main-panel">
     <div class="main-content">
       <div class="content-wrapper">

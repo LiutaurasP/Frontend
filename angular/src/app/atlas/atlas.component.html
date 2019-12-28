@@ -103,9 +103,7 @@
 					</button>
 				</div>
 				<div class="modal-body" id="kbModal-body">
-					<div id="line-area" class="lineArea" *ngIf="modal_data_mean">
-						<div [chart]="lineChart"></div>
-					</div>
+					<div *ngIf="modal_data_mean" [chart]="lineChart"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>

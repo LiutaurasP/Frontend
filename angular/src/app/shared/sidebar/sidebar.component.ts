@@ -26,6 +26,8 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   logoUrl = 'assets/img/logo.png';
   public config: any = {};
   layoutSub: Subscription;
+  public innerWidth: any;
+  public innerWidthSmall: any;
 
 
   constructor(
@@ -59,8 +61,12 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     else {
       this.logoUrl = 'assets/img/logo.png';
     }
-
-
+    this.innerWidth = window.innerWidth;
+    if(this.innerWidth < 1000){
+      this.innerWidthSmall = false
+    }else{
+      this.innerWidthSmall = true
+    }
   }
 
   ngAfterViewInit() {

@@ -40,6 +40,7 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
   iscollapsed = false;
   isSidebar_sm = false;
   isSidebar_lg = false;
+  isSidebar_m = false;
   bgColor = "black";
   bgImage = "assets/img/sidebar-bg/01.jpg";
 
@@ -53,6 +54,9 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2
   ) {
   }
+  
+  public innerWidth: any;
+  public innerWidthSmall: any;
 
   ngOnInit() {
     this.config = this.configService.templateConf;
@@ -85,6 +89,14 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isSidebar_sm = false;
         this.isSidebar_lg = false;
       }
+      this.innerWidth = window.innerWidth;
+      if(this.innerWidth < 1000){
+        this.isSidebar_m = true
+        this.isSidebar_sm = false
+      }else{
+        this.isSidebar_m = false
+        this.isSidebar_sm = true
+      }
       this.iscollapsed = this.config.layout.sidebar.collapsed;
     }, 0);
 
@@ -101,6 +113,7 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     //this.elementRef.nativeElement
     //  .querySelector("#cz-sidebar-width")
     //  .addEventListener("click", this.onClick.bind(this));
+
   }
 
   ngAfterViewInit() {

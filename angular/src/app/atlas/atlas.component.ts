@@ -55,7 +55,7 @@ export interface Economic_Series{
 
 export interface Economic_Polygon{
     country: string;
-    variable: string;
+    category: string;
     horizon: string;
     value : number;
 };
@@ -110,8 +110,9 @@ export class AtlasComponent {
                 text: 'Cycle'
             },
             tickInterval: 1,
-            max: 5,
-            min: 1
+            max: 6,
+            min: 1,
+            allowDecimals: false
         },
         legend: {
             enabled: false,  
@@ -190,6 +191,7 @@ export class AtlasComponent {
 
     public lineOptions: any = {
             chart: {
+                height: (9 / 16 * 100) + '%' // 16:9 ratio
             },
             title: {
                 text: null
@@ -254,7 +256,10 @@ export class AtlasComponent {
           }
         },
         colorAxis: {
-          min: 0
+            min: 0,
+            max: 10,
+            minColor: '#00efdd',
+            maxColor: '#001715'
         },
         yAxis: {
             title: null,
@@ -289,6 +294,7 @@ export class AtlasComponent {
             mapData: worldMap,
             joinBy: ['iso-a2', 'country_code']
         }]
+        //rgb(0, 157, 160);
     };
     
     mapChart : any;
@@ -310,13 +316,20 @@ export class AtlasComponent {
         //Load world map data
         this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world?scenario='+this.selectedScenario)
             .subscribe((data_details: World_Map_Entry[]) => {
-                this.mapOptions.series[0].data = data_details;
-                this.mapChart = new MapChart(this.mapOptions);
+                var temp_min = 0;
+                var temp_max = 10;
                 this.countryList = new Array<string>();
                 for(var t_stop of data_details){
                     this.countryList.push(t_stop.country);
                     this.refreshDate = t_stop.updatedDate;
+                    temp_min = Math.min(temp_min, t_stop.value);
+                    temp_max = Math.max(temp_max, t_stop.value);
                 }
+                this.mapOptions.series[0].data = data_details;
+                this.mapOptions.colorAxis.min = temp_min;
+                this.mapOptions.colorAxis.max = temp_max;
+                this.mapChart = new MapChart(this.mapOptions);
+                //
                 this.refreshDate = new Date(this.refreshDate);
                 this.worldMapData = data_details;
                 this.countrySelectorDrop(this.countryList[0]);
@@ -324,7 +337,7 @@ export class AtlasComponent {
     }
     
     countryList: string[];
-    countrySelected : string = "test"
+    countrySelected : string = "World"
     //Dropdown selector
     countrySelectorDrop(newSortOrder: string){ 
         this.currentCountryDetailsQoQ = null;
@@ -378,7 +391,6 @@ export class AtlasComponent {
         //Setting details
         let country_name = this.worldMapData.filter(stop => stop.country == newSortOrder)[0].country_code;
         this.flag_factors = false;
-        console.log('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario);
         this.http.get<Economic_Polygon[]>('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
              .subscribe((data_details: Economic_Polygon[]) => {
                 const temp_horizon_list = ['Before','Now','Future'];
@@ -387,8 +399,8 @@ export class AtlasComponent {
                 for(var t_cate_horizon of temp_horizon_list){
                     const temp_data_values = [];
                     for(var t_cate_stop of temp_category_list){
-                        if(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon).length > 0){
-                            temp_data_values.push(data_details.filter(t_obj => t_obj.variable == t_cate_stop && t_obj.horizon == t_cate_horizon)[0].value);
+                        if(data_details.filter(t_obj => t_obj.category == t_cate_stop && t_obj.horizon == t_cate_horizon).length > 0){
+                            temp_data_values.push(data_details.filter(t_obj => t_obj.category == t_cate_stop && t_obj.horizon == t_cate_horizon)[0].value);
                             this.flag_factors = true;
                         }
                     }
@@ -399,7 +411,6 @@ export class AtlasComponent {
              });
         //Setting cycle data
         this.flag_cycles = false;
-        console.log('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
         this.http.get<Economic_Cycle[]>('https://api.alphahuntsman.com/atlas/countrycycle?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
              .subscribe((data_details: Economic_Cycle[]) => {
                 const temp_data_values = [];
@@ -410,6 +421,7 @@ export class AtlasComponent {
                 this.cycleTrackerOptions.series[0].data = temp_data_values;
                 this.cycleTracker = new Chart(this.cycleTrackerOptions);
              });
+        //Setting indice data
     }
 
     
@@ -423,7 +435,8 @@ export class AtlasComponent {
         this.modal_data_mean = null;
         this.modal_data_upper = null;
         this.modal_data_lower = null;
-        this.http.get<Economic_Series_Timepoints[]>('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format)
+        console.log('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format+'&scenario='+this.selectedScenario);
+        this.http.get<Economic_Series_Timepoints[]>('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format+'&scenario='+this.selectedScenario)
              .subscribe((data_details: Economic_Series_Timepoints[]) => {
                 this.modal_data_mean = data_details.filter(temp => temp.measure == "Mean");
                 this.modal_data_upper = data_details.filter(temp => temp.measure == "Upper");
@@ -479,7 +492,7 @@ export class AtlasComponent {
                 this.lineOptions.series[2].data = lineplot_data_upper;
                 //Final model activation
                 this.title = t_variable + " " + data_format;
-                this.modalService.open(content, {windowClass : "myCustomModalClass"}).result.then((result) => {      
+                this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
                     }, (reason) => {     
                 });
              });

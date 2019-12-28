@@ -1,0 +1,74 @@
+[
+  {
+    "Timestamp": 1,
+    "Installation": 43934,
+    "Manufacturing": 24916,
+    "Sales": 11744,
+    "Project": 412,
+    "Other": 12908
+  },
+  {
+    "Timestamp": 2,
+    "Installation": 52503,
+    "Manufacturing": 24064,
+    "Sales": 17722,
+    "Project": 810,
+    "Other": 5948
+  },
+  {
+    "Timestamp": 3,
+    "Installation": 57177,
+    "Manufacturing": 29742,
+    "Sales": 16005,
+    "Project": 7988,
+    "Other": 8105
+  },
+  {
+    "Timestamp": 4,
+    "Installation": 69658,
+    "Manufacturing": 29851,
+    "Sales": 19771,
+    "Project": 12169,
+    "Other": 11248
+  },
+  {
+    "Timestamp": 5,
+    "Installation": 97031,
+    "Manufacturing": 32490,
+    "Sales": 20185,
+    "Project": 15112,
+    "Other": 8989
+  },
+  {
+    "Timestamp": 6,
+    "Installation": 119931,
+    "Manufacturing": 30282,
+    "Sales": 24377,
+    "Project": 22452,
+    "Other": 11816
+  },
+  {
+    "Timestamp": 7,
+    "Installation": 137133,
+    "Manufacturing": 38121,
+    "Sales": 32147,
+    "Project": 34400,
+    "Other": 18274
+  },
+  {
+    "Timestamp": 8,
+    "Installation": 154175,
+    "Manufacturing": 40434,
+    "Sales": 39387,
+    "Project": 34227,
+    "Other": 12908
+  },
+  {
+    "Timestamp": 9,
+    "Installation": 254175,
+    "Manufacturing": 42434,
+    "Sales": 49387,
+    "Project": 37227,
+    "Other": 18111
+  }
+]

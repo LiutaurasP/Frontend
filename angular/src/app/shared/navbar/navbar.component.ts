@@ -29,7 +29,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private layoutService: LayoutService, 
     private configService:ConfigService,
     private router: Router,
-    private authenticationService: AuthService
+    public authenticationService: AuthService
     ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de/) ? browserLang : "en");

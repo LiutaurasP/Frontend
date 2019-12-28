@@ -1,6 +1,19 @@
 @import "../../assets/sass/scss/gradient-variables";
 
+/*
 body.modal-open {
     position: fixed;
     overflow: hidden !important;
+}
+*/
+
+.atlasIndexPlot .modal-dialog .modal-content{
+    width:80%;
+    height:70%;
+    display: flex; flex-direction: column;
+}
+
+.atlasIndexPlot .highcharts-container{
+    width:100% !important; 
+    height:100% !important;
 }
