@@ -54,7 +54,7 @@ export class FAQComponent  {
     this.modal_content = (this.specs_all.filter(entry => entry.feature_name === titleGroup && entry.category_name === titleText ))[0].feature_details;
     this.modal_header_color = (this.specs_all.filter(entry => entry.feature_name === titleGroup && entry.category_name === titleText ))[0].feature_color;
     this.title = titleText;
-    this.modalService.open(content, { size: 'lg' }).result.then((result) => {      
+    this.modalService.open(content, { size: 'lg', windowClass : "faqModal" }).result.then((result) => {      
     }, (reason) => {     
     });
   }

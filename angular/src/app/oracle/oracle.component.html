@@ -1,0 +1,157 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">Strategic portfolio views</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<section id="hoverable-rows">
+			<div class="row text-left">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row justify-content-between">
+								<div class="col-12">
+									<div ngbDropdown>
+										<h4 class="primary type-info">Asset group </h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ assetClassSelected }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownAsset">
+											<button class="dropdown-item" *ngFor="let stop_asset of assetClassList" (click)="assetClassSelectorDrop(stop_asset)" >{{stop_asset}}</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-header">
+							</div>
+							<!--- 
+							<div class="card-body" *ngIf="!this.currentUser">
+								<div class="row text-center">
+								    <div class="col-sm-12">
+							          <h4 class="danger card-title">Registration is required for pricing access</h4>
+								    </div>
+							    </div>
+							</div>
+							*ngIf="this.currentUser"
+							--->
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="statsChartGroupFlag" [chart]="statsChartGroup"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="allocationsChartGroupFlag" [chart]="allocationsChartGroup"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<section id="hoverable-rows">
+			<div class="row text-left">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row justify-content-between">
+								<div class="col-6">
+									<div ngbDropdown>
+										<h4 class="primary type-info">Scenarios </h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownScenario" ngbDropdownToggle>{{ scenarioClassSelected }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+											<button class="dropdown-item" *ngFor="let stop_scenario of scenarioClassList" (click)="scenarioClassSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div ngbDropdown>
+										<h4 class="primary type-info">Currency </h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownCurrency" ngbDropdownToggle>{{ currencyClassSelected }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownCurrency">
+											<button class="dropdown-item" *ngFor="let stop_currency of currencyClassList" (click)="currencySelectorDrop(stop_country)" >{{stop_currency}}</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-header">
+								Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.01</span> next refresh due at 
+								<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd HH:mm' }}</span>.
+							</div>
+							<!--- 
+							<div class="card-body" *ngIf="!this.currentUser">
+								<div class="row text-center">
+								    <div class="col-sm-12">
+							          <h4 class="danger card-title">Registration is required for pricing access</h4>
+								    </div>
+							    </div>
+							</div>
+							*ngIf="this.currentUser"
+							--->
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="frontierChartGroupFlag" [chart]="frontierChartGroup"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="frontier10ChartGroupFlag" [chart]="frontier10ChartGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartAggGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartAggGroupFlag" [chart]="returnsChartAggGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartDMBondsGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartDMBondsGroupFlag" [chart]="returnsChartDMBondsGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartEMBondsGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartEMBondsGroupFlag" [chart]="returnsChartEMBondsGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartUSGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartUSGroupFlag" [chart]="returnsChartUSGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartEAGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartEAGroupFlag" [chart]="returnsChartEAGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartJPGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartJPGroupFlag" [chart]="returnsChartJPGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartCNGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartCNGroupFlag" [chart]="returnsChartCNGroup"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="returnsChartEMGroupFlag">
+									<div class="col-12">
+										<div *ngIf="returnsChartEMGroupFlag" [chart]="returnsChartEMGroup"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>

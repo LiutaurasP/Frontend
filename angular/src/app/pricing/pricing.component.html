@@ -1,7 +1,8 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="content-header">Key Differences Between Access Levels</div>
-    <p class="content-sub-header"></p>
+    <div class="content-header">Supporting us </div>
+    <p class="content-sub-header">If you find our analytics insightful and would like to support this project, please consider the options below. 
+    In returns, you'll receive access to a broader scope of insights and we will do your best to keep them up-to-date and relevant.</p>
   </div>
 </div>
 <section id="kb">
@@ -10,14 +11,15 @@
       <div class="card">
         <div class="card-header">
           <i class="ft-bell font-large-1 float-left mr-2"></i>
-          <h4 class="card-title mb-0">Free tier</h4>
-          <p class="card-text">Requires only registration</p>
+          <h4 class="card-title mb-0">Enthusiat</h4>
+          <p class="card-text">Personal usecase</p>
         </div>
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
               <div *ngFor="let t_item of specs_pricing_free">
-                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                <!-- (click)="GetDetails(content, t_item.feature_name, t_item.access_type)"</template-comment> -->
+                <li class="list-group-item cursor-pointer" >
                   <span class="badge  {{ t_item.feature_color }} float-left mr-2">
                     <i class="ft-file-text text-white"></i>
                   </span> {{ t_item.feature_name }}
@@ -28,7 +30,7 @@
         </div>
         <div class="card-footer">
           <fieldset disabled>
-            <a href="javascript:void(0)" class="btn btn-primary mt-2 btn-lg btn-block btn-raised">Only registration required</a>
+            <a href="javascript:void(0)" class="btn btn-primary mt-2 btn-lg btn-block btn-raised" disabled="disabled">Soon</a>
           </fieldset>
         </div>
       </div>
@@ -37,14 +39,14 @@
       <div class="card">
         <div class="card-header">
           <i class="ft-book font-large-1 float-left mr-2"></i>
-          <h4 class="card-title">Personal</h4>
-          <p class="card-text">Personal Usage</p>
+          <h4 class="card-title">Professional</h4>
+          <p class="card-text">Professional usecase</p>
         </div>
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
               <div *ngFor="let t_item of specs_pricing_personal">
-                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                <li class="list-group-item cursor-pointer">
                   <span class="badge  {{ t_item.feature_color }} float-left mr-2">
                     <i class="ft-file-text text-white"></i>
                   </span> {{ t_item.feature_name }}
@@ -55,7 +57,7 @@
         </div>
         <div class="card-footer">
           <fieldset disabled>
-            <a href="javascript:void(0)" class="btn btn-danger btn-lg btn-block btn-raised">Granted to all during beta</a>
+            <a href="javascript:void(0)" class="btn btn-danger btn-lg btn-block btn-raised">Soon</a>
           </fieldset>
         </div>
       </div>
@@ -64,14 +66,14 @@
       <div class="card">
         <div class="card-header">
           <i class="ft-file-text text-white font-large-1 float-left mr-2"></i>
-          <h4 class="card-title">Professional</h4>
-          <p class="card-text">Unbound usage</p>
+          <h4 class="card-title">Commercial</h4>
+          <p class="card-text">Commercial usecase</p>
         </div>
         <div class="card-content">
           <div class="card-body">
             <ul class="list-group">
               <div *ngFor="let t_item of specs_pricing_pro">
-                <li class="list-group-item cursor-pointer" (click)="GetDetails(content, t_item.feature_name, t_item.access_type)">
+                <li class="list-group-item cursor-pointer">
                   <span class="badge  {{ t_item.feature_color }} float-left mr-2">
                     <i class="ft-file-text text-white"></i>
                   </span> {{ t_item.feature_name }}
@@ -82,7 +84,7 @@
         </div>
         <div class="card-footer">
           <fieldset disabled>
-            <a href="javascript:void(0)" class="btn btn-secondary mt-2 btn-lg btn-block btn-raised">Contact for details</a>
+            <a href="javascript:void(0)" class="btn btn-secondary mt-2 btn-lg btn-block btn-raised">Soon</a>
           </fieldset>
         </div>
       </div>

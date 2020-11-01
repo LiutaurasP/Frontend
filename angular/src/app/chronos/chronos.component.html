@@ -1,0 +1,476 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">Sovereign Curves</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">
+			</div>
+			<div class="card-content">
+				<div class="card-header">
+					Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.01</span> next refresh due at 
+					<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd' }}</span>.
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-12">
+							<div id="SovCurvePlot" *ngIf="curvePlotFlag" class="SovCurvePlot">
+		    					<div [chart]="curvePlot"></div>
+							</div>
+						</div>
+					</div>
+					<div class="row justify-content-md-center">
+						<div class="col-1">
+						</div>
+						<div class="col-4">
+							<div ngbDropdown>
+								<h4 class="primary type-info">Country </h4>
+								<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ countrySelected }}</button>
+								<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+									<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)" >{{stop_country}}</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-4">
+							<div ngbDropdown>
+								<h4 class="danger type-info">Scenario </h4>
+								<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedScenario }}</button>
+								<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+									<button class="dropdown-item" *ngFor="let stop_scenario of scenarioList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-3">
+							<div ngbDropdown>
+								<h4 class="success type-info">Future Point </h4>
+								<button class="btn btn-outline-success mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedTimepoint }}</button>
+								<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+									<button class="dropdown-item" *ngFor="let stop_timepoint of timepointList" (click)="timepointSelectorDrop(stop_timepoint)" >{{stop_timepoint}}</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card" *ngIf=!flag_InstrumentForm>
+			<div class="card-content">
+				<div class="card-body">
+					<div class="row text-center">
+					    <div class="col-sm-12">
+				          <h4 class="danger card-title">Registration is required for pricing access</h4>
+					    </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+		<div class="card" *ngIf=flag_InstrumentForm>
+			<div class="card-content">
+				<div class="card-body">
+					<div class="row text-left">
+					    <div class="col-sm-12">
+					      <div class="card">
+					        <div class="card-header">
+					        	<div class="row">
+								    <div class="col-sm-6">
+							          <h4 class="card-title">Previous existing asset specifications</h4>
+							        </div>
+								    <div class="col-sm-2">
+							          <h4 class="card-title">Pricing engine:</h4>
+									</div>
+								    <div class="col-sm-2">
+								    	<h4 class="danger card-title" *ngIf=!flag_pricing_online>Offline</h4>
+								    	<h4 class="primary card-title" *ngIf=flag_pricing_online>Online</h4>
+									</div>
+								    <div class="col-sm-2">
+   				    	                <a href="javascript:void(0)" (click)="refreshTableData()" class="btn btn-outline-primary mr-1 btn-round">Refresh Assets</a>
+									</div>
+					        	</div>
+					        </div>
+					        <div class="card-content">
+					          <div class="card-body">
+					            <div class="table-responsive">
+					              <ng2-smart-table 
+						            	[settings]="requestDataTableSettings" 
+						            	[source]="requestDataTable" 
+						            	(deleteConfirm)="deleteRecord($event)"
+						            	(custom)="onCustomEvent($event)"
+						            	(userRowSelect)="onUserSelectRow($event, content)"
+		            				></ng2-smart-table>
+					            </div>
+					          </div>
+					        </div>
+					      </div>
+					    </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+		<div class="card" *ngIf=flag_InstrumentForm>
+			<div class="card-header">
+				Reference pricing for fixed income products
+			</div>
+			<div class="card-content">
+				<div class="card-body">
+					<div class="row text-left">
+						<div class="col-12">
+							<div class="px-3">
+					          <form class="form form-horizontal striped-rows form-bordered" #f="ngForm">
+								  <div class="form-body">
+  									<h4 class="form-section"><i class="ft-file-text"></i>Instrument details</h4>
+								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_name">Name</label>
+								      <div class="col-md-9">
+	   							          <input type="text" id="pricing_instrument_name" class="form-control" value="" placeholder="Custom instrument name" name="pricing_instrument_name" ngModel required #pricing_instrument_name="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+						                  <small class="form-text text-muted danger" *ngIf="!pricing_instrument_name.valid && (pricing_instrument_name.dirty || pricing_instrument_name.touched)">Please enter a valid name!</small>
+								      </div>
+								    </div>
+								    <div class="form-group row">
+  								       <label class="col-md-3 label-control" for="pricing_instrument_type">Instrument type</label>
+ 								       <div class="col-md-9">
+										   <select class="form-control" id="pricing_instrument_type" name="pricing_instrument_type" ngModel required #pricing_instrument_type="ngModel">
+											   <option>Fixed coupon bond</option>
+										   </select>
+									       <small class="form-text text-muted danger" *ngIf="!pricing_instrument_type.valid && (pricing_instrument_type.dirty || pricing_instrument_type.touched)">Please select an instrument type!</small>
+								       </div>
+								    </div>
+								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_issue_date">Issue date</label>
+								      <div class="col-md-9">
+				      	                <div class="input-group">
+						                  <div class="input-group-prepend">
+						                    <span class="input-group-text" id="basic-addon3">
+   						                      <i class="fa fa-calendar" style="cursor: pointer;" (click)="d2.toggle()"></i>
+									        </span>
+						                  </div>
+				      	                  <input class="form-control" placeholder="yyyy-mm-dd" name="pricing_instrument_issue_date" [(ngModel)]="popupModel" ngbDatepicker #d2="ngbDatepicker" ngModel required #pricing_instrument_issue_date="ngModel">
+									     </div>
+				      	                 <small class="form-text text-muted danger" *ngIf="!pricing_instrument_issue_date.valid && (pricing_instrument_issue_date.dirty || pricing_instrument_issue_date.touched)">Please select an issue date!</small>
+				      	              </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_maturity_date">Maturity date</label>
+								      <div class="col-md-9">
+				      	                <div class="input-group">
+						                  <div class="input-group-prepend">
+						                    <span class="input-group-text" id="basic-addon4">
+   						                      <i class="fa fa-calendar" style="cursor: pointer;" (click)="d3.toggle()"></i>
+									        </span>
+						                  </div>
+				      	                  <input class="form-control" placeholder="yyyy-mm-dd" name="pricing_instrument_maturity_date" [(ngModel)]="popupModel2" ngbDatepicker #d3="ngbDatepicker" ngModel required #pricing_instrument_maturity_date="ngModel">
+				      	                 </div>
+								         <small class="form-text text-muted danger" *ngIf="!pricing_instrument_maturity_date.valid && (pricing_instrument_maturity_date.dirty || pricing_instrument_maturity_date.touched)">Please select a maturity date!</small>
+				      	              </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_coupon_rate">Coupon rate</label>
+								      <div class="col-md-9">
+								        <input type="number" min="0" id="pricing_instrument_coupon_rate" class="form-control" value="" placeholder="6.0 for 6%" name="pricing_instrument_coupon_rate" ngModel required #pricing_instrument_coupon_rate="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+						                  <small class="form-text text-muted danger" *ngIf="!pricing_instrument_coupon_rate.valid && (pricing_instrument_coupon_rate.dirty || pricing_instrument_coupon_rate.touched)">Please enter a coupon rate!</small>
+								      </div>
+								    </div>
+								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_coupon_type">Coupon frequency</label>
+ 								       <div class="col-md-9">
+										   <select class="form-control" id="pricing_instrument_coupon_type" name="pricing_instrument_coupon_type" ngModel required #pricing_instrument_coupon_type="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+											   <option>Annual</option>
+											   <option>Semiannual</option>
+											   <option>EveryFourthMonth</option>
+											   <option>Quarterly</option>
+											   <option>Bimonthly</option>
+											   <option>Monthly</option>
+											   <option>EveryFourthWeek</option>
+											   <option>Biweekly</option>
+											   <option>Weekly</option>
+											   <option>Daily</option>
+										   </select>
+						                   <small class="form-text text-muted danger" *ngIf="!pricing_instrument_coupon_type.valid && (pricing_instrument_coupon_type.dirty || pricing_instrument_coupon_type.touched)">Please select a coupon periodicity!</small>
+									   </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_calendar_type">Calendar type</label>
+ 								       <div class="col-md-9">
+										   <select class="form-control" id="pricing_instrument_calendar_type" name="pricing_instrument_calendar_type" ngModel required #pricing_instrument_calendar_type="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+											   <option>Argentina</option>
+											   <option>Australia</option>
+											   <option>Brazil</option>
+											   <option>Canada</option>
+											   <option>China</option>
+											   <option>CzechRepublic</option>
+											   <option>Denmark</option>
+											   <option>Finland</option>
+											   <option>Germany</option>
+											   <option>HongKong</option>
+											   <option>Hungary</option>
+											   <option>Iceland</option>
+											   <option>India</option>
+											   <option>Indonesia</option>
+											   <option>Israel</option>
+											   <option>Italy</option>
+											   <option>Japan</option>
+											   <option>Mexico</option>
+											   <option>NewZealand</option>
+											   <option>Norway</option>
+											   <option>Poland</option>
+											   <option>Romania</option>
+											   <option>Russia</option>
+											   <option>SaudiArabia</option>
+											   <option>Singapore</option>
+											   <option>Slovakia</option>
+											   <option>SouthAfrica</option>
+											   <option>SouthKorea</option>
+											   <option>Sweden</option>
+											   <option>Switzerland</option>
+											   <option>Taiwan</option>
+											   <option>Turkey</option>
+											   <option>Ukraine</option>
+											   <option>UnitedKingdom</option>
+											   <option>UnitedStates</option>
+											   <option>WeekendsOnly</option>
+										   </select>
+   						                   <small class="form-text text-muted danger" *ngIf="!pricing_instrument_calendar_type.valid && (pricing_instrument_calendar_type.dirty || pricing_instrument_calendar_type.touched)">Please select a calendar type!</small>
+									   </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_business_day_count">Day convention</label>
+ 								       <div class="col-md-9">
+										   <select class="form-control" id="pricing_instrument_business_day_count" name="pricing_instrument_business_day_count" ngModel required #pricing_instrument_business_day_count="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+											   <option>Actual360</option>
+											   <option>Actual365Fixed</option>
+											   <option>Actual365NoLeap</option>
+											   <option>ActualActual</option>
+											   <option>Business252</option>
+											   <option>Thirty360</option>
+										   </select>
+   						                   <small class="form-text text-muted danger" *ngIf="!pricing_instrument_business_day_count.valid && (pricing_instrument_business_day_count.dirty || pricing_instrument_business_day_count.touched)">Please select a day convention!</small>
+									   </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_business_day_conv">Schedule convention</label>
+ 								       <div class="col-md-9">
+										   <select class="form-control" id="pricing_instrument_business_day_conv"  name="pricing_instrument_business_day_conv" ngModel required #pricing_instrument_business_day_conv="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+											   <option>Following</option>
+											   <option>ModifiedFollowing</option>
+											   <option>Preceding</option>
+											   <option>ModifiedPreceding</option>
+											   <option>Unadjusted</option>
+											   <option>HalfMonthModifiedFollowing</option>
+										   </select>
+   						                   <small class="form-text text-muted danger" *ngIf="!pricing_instrument_business_day_conv.valid && (pricing_instrument_business_day_conv.dirty || pricing_instrument_business_day_conv.touched)">Please select a day convention!</small>
+									   </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_facevalue">Face value</label>
+								      <div class="col-md-9">
+								        <input type="number" min="1" id="pricing_instrument_facevalue" class="form-control" value="100" name="pricing_instrument_facevalue" ngModel required #pricing_instrument_facevalue="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+    						            <small class="form-text text-muted danger" *ngIf="!pricing_instrument_facevalue.valid && (pricing_instrument_facevalue.dirty || pricing_instrument_facevalue.touched)">Please enter a face value!</small>
+						              </div>
+								    </div>
+								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_sov_curve">Curve</label>
+								      <div class="col-md-9">
+   									    <select [(ngModel)]="sov_curve_dropdown" class="form-control" id="pricing_instrument_sov_curve" name="pricing_instrument_sov_curve" ngModel  #pricing_instrument_sov_curve="ngModel" (change)="onChangeCurve($event)">
+											<option *ngFor="let stop_country of countryListPricing" [selected]="stop_country == countrySelected">{{stop_country}}</option>
+										</select>
+								      </div>
+								    </div>
+  								    <div class="form-group row"  *ngIf="countrySelectedPricing == 'Flat'">
+								      <label class="col-md-3 label-control" for="pricing_instrument_flat_yield">Flat yield</label>
+								      <div class="col-md-9">
+								        <input type="number" min="-10" id="pricing_instrument_flat_yield" class="form-control" [(ngModel)]="temp_flat_yield_hax" name="pricing_instrument_flat_yield" ngModel required #pricing_instrument_flat_yield="ngModel" [ngModelOptions]="{updateOn: 'blur'}">
+    						            <small class="form-text text-muted danger" *ngIf="!pricing_instrument_flat_yield.valid && (pricing_instrument_flat_yield.dirty || pricing_instrument_flat_yield.touched)">Please enter a flat yield!</small>
+						              </div>
+								    </div>
+  								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_scenario">Scenario</label>
+								      <div class="col-md-9">
+   									    <select [(ngModel)]="scenario_dropdown" class="form-control" id="pricing_instrument_scenario" name="pricing_instrument_scenario" ngModel #pricing_instrument_sov_curve="ngModel" (change)="onChangeScenario($event)">
+   									    	<option *ngFor="let stop_scenario of scenarioListPricing" [selected]="stop_scenario == selectedScenario">{{stop_scenario}}</option>
+										</select>
+								      </div>
+								    </div>
+								    <div class="form-group row" *ngIf="selectedScenarioTemp != 'Current'">
+								      <label class="col-md-3 label-control" for="pricing_instrument_future_point">Future point</label>
+								      <div class="col-md-9">
+   									    <select [(ngModel)]="timepoints_dropdown" class="form-control" id="pricing_instrument_future_point" name="pricing_instrument_future_point" ngModel #pricing_instrument_future_point="ngModel">
+   									    	<option *ngFor="let stop_time of timepointList" [selected]="stop_time == selectedTimepoint">{{stop_time}}</option>
+										</select>
+								      </div>
+								    </div>
+								    <div class="form-group row">
+								      <label class="col-md-3 label-control" for="pricing_instrument_credit_spread">Credit spread</label>
+								      <div class="col-md-9">
+								        <input type="number" min="0" id="pricing_instrument_credit_spread" class="form-control" value="" placeholder="Additional credit spread, default 0" name="pricing_instrument_credit_spread" ngModel #pricing_instrument_credit_spread="ngModel">
+								      </div>
+								    </div>
+								    <div class="form-actions right">
+				    	                <button type="button" class="btn btn-primary btn-raised" (click)="onInstrumentCreate()" [disabled]="!f.valid">Submit</button>
+								    </div>
+								  </div>
+							 </form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<ng-template #content let-c="close" let-d="dismiss">
+			<div class="modal-header bg-primary">
+				<h4 class="modal-title white">{{modalTitle}}</h4>
+				<button type="button" class="close white" aria-label="Close" (click)="d('Cross click')">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id="kbModal-body">
+				<div *ngIf="modalInstrumentResults">
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Asset yield:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.asset_yield">
+	    			    	{{ (modalInstrumentResults.asset_yield*100).toFixed(2) }} %
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Net present value:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.NPV">
+	    			    	{{ (modalInstrumentResults.NPV).toFixed(2) }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Clean price:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.CleanPrice">
+	    			    	{{ (modalInstrumentResults.CleanPrice).toFixed(2) }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Dirty price:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.DirtyPrice">
+	    			    	{{ (modalInstrumentResults.DirtyPrice).toFixed(2) }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Accrued:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.Accrued">
+	    			    	{{ (modalInstrumentResults.Accrued).toFixed(2) }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>DV01:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.DV01">
+	    			    	{{ (modalInstrumentResults.DV01).toFixed(2) }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Run date:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.run_date">
+	    			    	{{ modalInstrumentResults.run_date | date : "yyyy-MMM-dd HH:mm" }}
+						</div>
+					</div>
+				    <div class="form-group row">
+	    			    <div class="col-md-7">
+					    	<label>Cashflows:</label>
+					    </div>
+	    			    <div class="col-md-5" *ngIf="modalInstrumentResults.run_date">
+						</div>
+					</div>
+
+				    <div class="form-group row">
+	    			    <div class="col-md-4">
+					    	<label>Dates</label>
+					    </div>
+	    			    <div class="col-md-4">
+					    	<label>Flow</label>
+						</div>
+	    			    <div class="col-md-4">
+					    	<label>Discount</label>
+						</div>
+					</div>
+				    <div class="form-group row" *ngFor="let entry of modalCashflowsData">
+	    			    <div class="col-md-4">
+							{{ entry.date }}
+						</div>
+	    			    <div class="col-md-4">
+					    	{{ (entry.flow).toFixed(3) }}
+						</div>
+	    			    <div class="col-md-4">
+					    	{{ (entry.discount).toFixed(3) }}
+						</div>
+					</div>
+
+				    <div class="form-group row">
+	    			    <div class="col-md-6">
+					    	<label>KRD Tenor</label>
+					    </div>
+	    			    <div class="col-md-6">
+					    	<label>Sensitivity</label>
+						</div>
+					</div>
+				    <div class="form-group row" *ngFor="let entry of modalCashflowsKRDsData">
+	    			    <div class="col-md-6">
+	    			    	{{ entry.tenor }}
+						</div>
+	    			    <div class="col-md-6">
+					    	{{ (entry.value).toFixed(2) }}
+						</div>
+					</div>
+
+				    <div class="form-group row">
+	    			    <div class="col-md-3">
+					    	<label>Date in years</label>
+					    </div>
+	    			    <div class="col-md-2">
+					    	<label>Amount</label>
+					    </div>
+	    			    <div class="col-md-2">
+					    	<label>Disc. Rate</label>
+					    </div>
+	    			    <div class="col-md-2">
+					    	<label>Disc. CSUM</label>
+					    </div>
+	    			    <div class="col-md-2">
+					    	<label>Disc. Amnt</label>
+					    </div>
+					</div>
+				    <div class="form-group row" *ngFor="let entry of modalCashflowsDetailsData">
+	    			    <div class="col-md-3">
+	    			    	{{ (entry.date).toFixed(2) }}
+					    </div>
+	    			    <div class="col-md-2">
+	    			    	{{ (entry.amount).toFixed(2) }}
+					    </div>
+	    			    <div class="col-md-2">
+	    			    	{{ (entry.discountRate).toFixed(2) }}
+					    </div>
+	    			    <div class="col-md-2">
+	    			    	{{ (entry.discountCSUM).toFixed(2) }}
+					    </div>
+	    			    <div class="col-md-2">
+	    			    	{{ (entry.discountAmount).toFixed(2) }}
+					    </div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>
+			</div>
+		</ng-template>
+
+	</div>
+</div>

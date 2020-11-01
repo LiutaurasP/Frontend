@@ -86,11 +86,53 @@ my-app .main-panel .main-content .card{
 }
 
 .myCustomModalClass .modal-dialog {
+    /*
     max-width: calc(100vw);
     max-height: calc(40vw);
+    max-width: 90%;
+    max-height: 70%;
+    */
     position: relative;
 }
 
 .myCustomModalClass .modal-body {
-    overflow: hidden !important;
+    overflow: hidden;
 }
+
+.atlasIndexPlot .modal-dialog {
+    max-width: 3000px !important;
+    max-height: 2000px !important;
+    width: 90% !important;
+    height: 80% !important;
+	margin: 1.75rem auto;
+	overflow: visible;
+}
+
+.atlasIndexPlot .modal-dialog .modal-content{ 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.atlasIndexPlot .modal-dialog .modal-content .modal-body{ 
+    height: 100% !important;
+    overflow-y: visible !important;
+}
+
+.atlasIndexPlot #kbModal-body{
+    width:100% !important;
+    height: 100% !important;
+}
+
+.highcharts-container{
+  width: 100% !important;
+}
+
+.highcharts-root{
+  width: 100% !important;
+}
+
+.faqModal #kbModal-body{
+    width:100% !important;
+    height: 100% !important;
+}
+

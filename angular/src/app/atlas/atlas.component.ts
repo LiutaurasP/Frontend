@@ -1,5 +1,6 @@
 import { Component , NgZone} from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 import { HttpClient } from '@angular/common/http';
 import { interval, Subscription } from 'rxjs';
@@ -13,6 +14,7 @@ export interface World_Map_Entry{
     country: string;
     country_code: string;
     updatedDate: string;
+    updatedDate_next: string;
     value: number;
     importance: number;
 };
@@ -66,6 +68,102 @@ export interface Economic_Cycle{
     value : number;
 };
 
+//FX object
+export interface FX_data{
+    FX_index: string[];
+    FX_values : number[];
+};
+
+export interface NEER_data{
+    NEER_index: string[];
+    NEER_values : number[];
+};
+
+export interface REER_data{
+    REER_index: string[];
+    REER_values : number[];
+};
+
+export interface Curve_Data{
+    country: string;
+    scenario: string;
+    time: string;
+    tenor : number;
+    value : number;    
+    updatedDate: string;
+    updatedDate_next: string;
+};
+
+//VaR objects
+export interface VaR_Data{
+      //CPI
+      CPI_index: string[],
+      CPI_q10_values: string[],
+      CPI_CreditTOGDP_values: string[],
+      CPI_CreditTOGDPNFC_values: string[],
+      CPI_CreditTOGDPNF_values: string[],
+      CPI_NPLTOLoans_values: string[],
+      CPI_LiquidityAssets_values: string[],
+      CPI_ComRELoans_values: string[],
+      CPI_ResidRELoans_values: string[],
+      CPI_RHousePrice_values: string[],
+      CPI_HouPricInc_values: string[],
+      CPI_HouPricRent_values: string[],
+      CPI_LongYield_values: string[],
+      CPI_ShortYield_values: string[],
+      CPI_TermSpread_values: string[],
+      //Growth
+      Growth_index: string[],
+      Growth_q10_values: string[],
+      Growth_CreditTOGDP_values: string[],
+      Growth_CreditTOGDPNFC_values: string[],
+      Growth_CreditTOGDPNF_values: string[],
+      Growth_NPLTOLoans_values: string[],
+      Growth_LiquidityAssets_values: string[],
+      Growth_ComRELoans_values: string[],
+      Growth_ResidRELoans_values: string[],
+      Growth_RHousePrice_values: string[],
+      Growth_HouPricInc_values: string[],
+      Growth_HouPricRent_values: string[],
+      Growth_LongYield_values: string[],
+      Growth_ShortYield_values: string[],
+      Growth_TermSpread_values: string[],
+      //Equties
+      Equities_index: string[],
+      Equities_q10_values: string[],
+      Equities_CreditTOGDP_values: string[],
+      Equities_CreditTOGDPNFC_values: string[],
+      Equities_CreditTOGDPNF_values: string[],
+      Equities_NPLTOLoans_values: string[],
+      Equities_LiquidityAssets_values: string[],
+      Equities_ComRELoans_values: string[],
+      Equities_ResidRELoans_values: string[],
+      Equities_RHousePrice_values: string[],
+      Equities_HouPricInc_values: string[],
+      Equities_HouPricRent_values: string[],
+      Equities_LongYield_values: string[],
+      Equities_ShortYield_values: string[],
+      Equities_TermSpread_values: string[]
+}
+
+export interface Growth_SupplyDemand{
+    country: string;
+    Growth_index: string[];
+    Growth_demand : number[];
+    Growth_supply : number[];
+    Growth_actual : number[];
+    run_date: string;
+};
+
+export interface Growth_SupplyDemandTri{
+    country: string;
+    Growth_index: string[];
+    Growth_demand : number[];
+    Growth_supply : number[];
+    Growth_longrun : number[];
+    run_date: string;
+};
+
 declare var require: any;
 const worldMap = require('@highcharts/map-collection/custom/world.geo.json');
 
@@ -79,8 +177,8 @@ const worldMap = require('@highcharts/map-collection/custom/world.geo.json');
 
 export class AtlasComponent {
     
-    currentCountryDetailsQoQ : Economic_Series;
-    currentCountryDetailsYoY : Economic_Series;
+    currentCountryDetailsQoQ : Economic_Series[];
+    currentCountryDetailsYoY : Economic_Series[];
     
     worldMapData : World_Map_Entry[];
     
@@ -155,7 +253,8 @@ export class AtlasComponent {
         yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
-            min: 0
+            min: 0,
+            max: 200
         },
     
         tooltip: {
@@ -190,9 +289,6 @@ export class AtlasComponent {
     };
 
     public lineOptions: any = {
-            chart: {
-                height: (9 / 16 * 100) + '%' // 16:9 ratio
-            },
             title: {
                 text: null
             },
@@ -207,7 +303,8 @@ export class AtlasComponent {
 
             tooltip: {
                 crosshairs: true,
-                shared: true
+                shared: true,
+                pointFormat: "{series.name}: {point.y:.2f}"
             },
 
             legend: {
@@ -219,11 +316,11 @@ export class AtlasComponent {
                 color: "#000000",
                 data: []
             }, {
-                name: 'Lower',
+                name: 'Upper',
                 color: "#009DA0",
                 data: []
             },{
-                name: 'Upper',
+                name: 'Lower',
                 color: "#009DA0",
                 data: []
             }]
@@ -304,15 +401,468 @@ export class AtlasComponent {
     
     subscription: Subscription;
     
-    constructor(private http: HttpClient, private modalService: NgbModal) { 
-    }
-    
-
-    selectedScenario: any;
     refreshDate: any;
+    refreshDate_next: any;
+    
+    //Curvve plots
+    curvePlot = null;
+    curvePlotFlag  = null;
+    public curvePlotOptions: any = {
+        chart: {
+           type: 'spline'
+        },
+        title: {
+            text: ''
+        },
+        
+        yAxis: {
+            title: {
+                text: 'Annual Yield (%)'
+            }
+        },
+
+        xAxis: {
+            categories: ['O/N', '1M', '2M', '3M', '6M', '1Y', '2Y', '3Y', '5Y', '7Y', '10Y', '15Y','20Y']
+        },
+
+        plotOptions: {
+            series: {
+                label: {
+                    connectorAllowed: false
+                }
+            }
+        },
+        
+        series: [{
+            name: 'Current',
+            color: "#000000",
+            data: []
+        }, {
+            name: 'Future Point',
+            color: "#009DA0",
+            data: []
+        }],
+        
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+    };
+    
+    //Tenors
+    tenorList: string[];
+    pulledCurvedData: Curve_Data[];
+    
+    //Time point list  
+    currentTimepoint: string= "2020-01-01";
+    selectedTimepoint: string= "2025-03-01";
+    timepointList: string[];
+    timepointSelectorDrop(newSortOrder: string){
+      this.selectedTimepoint = newSortOrder;
+      this.plottingSelectedCurve();
+    }
+
+    flag_fx = false;
+    flag_fxPLOT = false;
+    flag_NEERPLOT = false;
+    flag_REERPLOT = false;
+    //
+    lineChartFXPlot = null;
+    lineChartNEERPlot = null;
+    lineChartREERPlot = null;
+    
+    public lineChartFXPlotOptions: any = {
+        title: {
+            text: null
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Nominal FX of country to USD"
+            }
+        },
+    
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+    
+        legend: {
+            enabled: false
+        },
+    
+        series: [{
+            name: 'Central point',
+            color: "#009DA0",
+            data: []
+        }]
+    };
+
+    public lineChartNEERPlotOptions: any = {
+            title: {
+                text: null
+            },
+            rangeSelector: {
+                enabled:false
+            },
+            yAxis: {
+                title: {
+                    text: "Nominal Effective Exchange Rate"
+                }
+            },
+        
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+                pointFormat: "{series.name}: {point.y:.2f}"
+            },
+        
+            legend: {
+                enabled: false
+            },
+        
+            series: [{
+                name: 'Central point',
+                color: "#009DA0",
+                data: []
+            }]
+        };
+    
+    public lineChartREERPlotOptions: any = {
+            title: {
+                text: null
+            },
+            rangeSelector: {
+                enabled:false
+            },
+            yAxis: {
+                title: {
+                    text: "Real Effective Exchange Rate (CPI)" 
+                }
+            },
+        
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+                pointFormat: "{series.name}: {point.y:.2f}"
+            },
+        
+            legend: {
+                enabled: false
+            },
+        
+            series: [{
+                name: 'Central point',
+                color: "#009DA0",
+                data: []
+            }]
+        };
+
+    //
+    //VaR
+    //
+    flag_VaR = false;
+    flag_VaRGrowthPLOT = false;
+    flag_VaRInflationPLOT = false;
+    flag_VaREquitiesPLOT = false;
+    //
+    lineChartVaRGrowthDrivers = null;
+    lineChartVaRGrowthQuantile = null;
+    lineChartVaRInflationDrivers = null;
+    lineChartVaRInflationQuantile = null;
+    lineChartVaREquitiesDrivers = null;
+    lineChartVaREquitiesQuantile = null;
+
+    //
+    public lineChartVaRGrowthDriversOptions: any = {
+        title: {
+            text: "Extreme growth outcome drivers"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Event probability"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}%"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+    public lineChartVaRGrowthQuantileOptions: any = {
+        title: {
+            text: "Dynamic 10% lower growth tail value"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "QoQ outcome value"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+
+    public lineChartVaRInflationDriversOptions: any = {
+        title: {
+            text: "Extreme inflation outcome drivers"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Event probability"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}%"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+    public lineChartVaRInflationQuantileOptions: any = {
+        title: {
+            text: "Dynamic 90% upper inflation tail value"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Annual outcome value"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+    
+    public lineChartVaREquitiesDriversOptions: any = {
+        title: {
+            text: "Extreme equity market outcome drivers"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Event probability"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}%"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+    public lineChartVaREquitiesQuantileOptions: any = {
+        title: {
+            text: "Dynamic 10% lower equity market tail value"
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "QoQ outcome value"
+            }
+        },
+        
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+        
+        legend: {
+            enabled: false
+        },
+        
+        series: []
+    };
+    
+    //Decomposition
+    flagGrowthSupplyDemand = false;
+    lineChartGrowthSupplyDemandPlot = null;
+    public lineChartGrowthSupplyDemandOptions: any = {
+        title: {
+            text: null
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Growth QoQ AR"
+            }
+        },
+    
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+    
+        legend: {
+            enabled: false
+        },
+    
+        series: [
+            {
+                name: 'Supply shock',
+//                color: "#009DA0",
+                data: []
+            },
+            {
+                name: 'Demand shock',
+//                color: "#009DA0",
+                data: []
+            },
+            {
+                name: 'Growth',
+//                color: "#009DA0",
+                data: []
+            }
+        ]
+    };
+    //Tri
+    flagGrowthSupplyTriDemand = false;
+    lineChartGrowthSupplyDemandTriPlot = null;
+    public lineChartGrowthSupplyDemandTriOptions: any = {
+        title: {
+            text: null
+        },
+        rangeSelector: {
+            enabled:false
+        },
+        yAxis: {
+            title: {
+                text: "Growth QoQ AR"
+            }
+        },
+    
+        tooltip: {
+            crosshairs: true,
+            shared: true,
+            pointFormat: "{series.name}: {point.y:.2f}"
+        },
+    
+        legend: {
+            enabled: false
+        },
+    
+        series: [
+            {
+                name: 'Supply shock',
+//                color: "#009DA0",
+                data: []
+            },
+            {
+                name: 'Demand shock',
+//                color: "#009DA0",
+                data: []
+            },
+            {
+                name: 'Long-run',
+//                color: "#009DA0",
+                data: []
+            }
+        ]
+    };
+    //
+    constructor(
+        private http: HttpClient, 
+        private modalService: NgbModal,
+        private router: Router
+        ) { 
+        this.curvePlotFlag = false;
+    }
 
     ngOnInit(){
+        this.curvePlotFlag = false;
+        this.flag_fx = false;
+        this.flag_fxPLOT = false;
+        this.flag_NEERPLOT = false;
+        this.flag_REERPLOT = false;
+        this.flagGrowthSupplyDemand = false;
+        this.flagGrowthSupplyTriDemand = false;
+
+        //
         this.selectedScenario = "Baseline";
+        //Load scenarios
+        this.scenarionList = new Array<string>();
+        this.scenarionList.push("Baseline");
+        //Load scenarions
+        this.http.get<string[]>('https://api.alphahuntsman.com/atlas/scenarios').subscribe((data_scenarions: string[]) => {
+                this.scenarionList = new Array<string>();
+                for(var t_stop of data_scenarions){
+                    this.scenarionList.push(t_stop);
+                }
+            },
+            (err) => {
+                this.router.navigate(['/pages/maintenance']);
+            }
+            );
+        
         //Load world map data
         this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world?scenario='+this.selectedScenario)
             .subscribe((data_details: World_Map_Entry[]) => {
@@ -322,6 +872,7 @@ export class AtlasComponent {
                 for(var t_stop of data_details){
                     this.countryList.push(t_stop.country);
                     this.refreshDate = t_stop.updatedDate;
+                    this.refreshDate_next = t_stop.updatedDate_next;
                     temp_min = Math.min(temp_min, t_stop.value);
                     temp_max = Math.max(temp_max, t_stop.value);
                 }
@@ -333,8 +884,20 @@ export class AtlasComponent {
                 this.refreshDate = new Date(this.refreshDate);
                 this.worldMapData = data_details;
                 this.countrySelectorDrop(this.countryList[0]);
+                //Load curve data
+                //Pull data
+                this.curvePlotFlag = false;
+                this.pullingCurveData();
             });
     }
+    
+    //Dropdown selector
+    selectedScenario: any;
+    scenarionList: string[];
+    scenarioSelectorDrop(newSortOrder: string){
+        this.selectedScenario = newSortOrder;
+        this.countrySelectorDrop(this.countrySelected);
+    }    
     
     countryList: string[];
     countrySelected : string = "World"
@@ -361,28 +924,53 @@ export class AtlasComponent {
                 let yoy_data = data_details.filter(obj => obj.series_name == t_name && obj.series_format == "YoY")[0];
                 //console.log(data_details[0]);
                 if(!this.currentCountryDetailsQoQ && qoq_data){
-                    this.currentCountryDetailsQoQ = {
+                    this.currentCountryDetailsQoQ = new Array<Economic_Series>();
+                }
+                if(!this.currentCountryDetailsYoY && yoy_data){
+                    this.currentCountryDetailsYoY = new Array<Economic_Series>();
+                }
+                if(qoq_data){
+                    let t_entry = {
                         last_updated : new Date(qoq_data.last_update).toISOString().slice(0,10),
                         series_name: t_name,
                         series_format: qoq_data.series_format,
                         series: new Array<Economic_Series_Values>()
                     };
+                    t_entry.series.push(qoq_data);
+                    this.currentCountryDetailsQoQ.push(t_entry);
                 }
-                if(!this.currentCountryDetailsYoY && yoy_data){
-                    this.currentCountryDetailsYoY = {
+                if(yoy_data){
+                    let t_entry = {
                         last_updated : new Date(yoy_data.last_update).toISOString().slice(0,10),
                         series_name: t_name,
                         series_format: yoy_data.series_format,
                         series: new Array<Economic_Series_Values>()
                     };
-                }
-                if(qoq_data){
-                    this.currentCountryDetailsQoQ.series.push(qoq_data);
-                }
-                if(yoy_data){
-                    this.currentCountryDetailsYoY.series.push(yoy_data);
+                    t_entry.series.push(yoy_data);
+                    this.currentCountryDetailsYoY.push(t_entry);
                 }
             }
+            //
+            this.curvePlotFlag = false;
+            this.flag_fx = false;
+            this.flag_fxPLOT = false;
+            this.flag_NEERPLOT = false;
+            this.flag_REERPLOT = false;
+            this.flagGrowthSupplyDemand = false;
+            this.flagGrowthSupplyTriDemand = false;
+
+            //Pull data
+            this.pullingCurveData()
+            //FX data
+            this.pullinFXData();
+            //VaR
+            this.pullingVaRData();
+            //Growth supply demand decomposition
+            this.pullingGrowthSupplyDemand();
+            this.pullingGrowthSupplyDemandTri();
+            //let test_object = "Real Growth";
+            //let test_data = data_details.filter(obj => test_object == t_name && obj.series_format == "QoQ AR");
+            //console.log(test_data);
          });
     
         //factor data
@@ -435,18 +1023,19 @@ export class AtlasComponent {
         this.modal_data_mean = null;
         this.modal_data_upper = null;
         this.modal_data_lower = null;
-        console.log('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format+'&scenario='+this.selectedScenario);
+        var format_qoq_ar = "QoQ AR";
         this.http.get<Economic_Series_Timepoints[]>('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format+'&scenario='+this.selectedScenario)
              .subscribe((data_details: Economic_Series_Timepoints[]) => {
                 this.modal_data_mean = data_details.filter(temp => temp.measure == "Mean");
                 this.modal_data_upper = data_details.filter(temp => temp.measure == "Upper");
                 this.modal_data_lower = data_details.filter(temp => temp.measure == "Lower");
+                
                 //Sort to plot
                 const lineplot_data_mean = [];
                 const lineplot_data_upper = [];
                 const lineplot_data_lower = [];
                 for(var t_inner of this.modal_data_mean){
-                    if(data_format == "QoQ"){
+                    if(t_inner.format == format_qoq_ar){
                         let temp_year = t_inner.time.split("Q")[0]
                         let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
                         let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
@@ -460,7 +1049,7 @@ export class AtlasComponent {
                 };
                 //Upper values
                 for(var t_inner of this.modal_data_upper){
-                    if(data_format == "QoQ"){
+                    if(t_inner.format == format_qoq_ar){
                         let temp_year = t_inner.time.split("Q")[0]
                         let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
                         let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
@@ -474,7 +1063,7 @@ export class AtlasComponent {
                 };
                 //Lower values
                 for(var t_inner of this.modal_data_lower){
-                    if(data_format == "QoQ"){
+                    if(t_inner.format == format_qoq_ar){
                         let temp_year = t_inner.time.split("Q")[0]
                         let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
                         let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
@@ -490,6 +1079,7 @@ export class AtlasComponent {
                 this.lineOptions.series[0].data = lineplot_data_mean;
                 this.lineOptions.series[1].data = lineplot_data_lower;
                 this.lineOptions.series[2].data = lineplot_data_upper;
+                window.dispatchEvent(new Event('resize'));
                 //Final model activation
                 this.title = t_variable + " " + data_format;
                 this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
@@ -497,4 +1087,779 @@ export class AtlasComponent {
                 });
              });
     }
+
+    async pullinFXData(){
+        //Get tenors
+        var countrySelectedCurve = this.countrySelected;
+        if (countrySelectedCurve == "United Kingdom"){
+            countrySelectedCurve = "UK";
+        }else if (countrySelectedCurve == "United States"){
+            countrySelectedCurve = "US";
+        }else if (countrySelectedCurve == "Austria"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Belgium"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Estonia"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Finland"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "France"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Germany"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Ireland"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Italy"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Latvia"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Lithuania"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Netherlands"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Portugal"){
+            countrySelectedCurve = "EA";
+        }else if (countrySelectedCurve == "Spain"){
+            countrySelectedCurve = "EA";
+        }
+
+        //FX data
+        this.http.get<NEER_data>('https://api.alphahuntsman.com/exchange/NEER?country='+countrySelectedCurve+'&scenario='+this.selectedScenario)
+         .subscribe((data_details_NEER: NEER_data) => {
+             ///
+            this.http.get<REER_data>('https://api.alphahuntsman.com/exchange/REER?country='+countrySelectedCurve+'&scenario='+this.selectedScenario)
+                 .subscribe((data_details_REER: REER_data) => {
+                    //FX
+                    this.http.get<FX_data>('https://api.alphahuntsman.com/exchange/FX?country='+countrySelectedCurve+'&scenario='+this.selectedScenario)
+                     .subscribe((data_details_FX: FX_data) => {
+                        //Get timepoints
+                        if(this.tenorList.length < 1){
+                            this.flag_fx = false;
+                        }else{
+                            //FX
+                            const plot_data = [];
+                            for (var t_stop = 1;t_stop < data_details_FX[0].FX_index.length;t_stop++){
+                                let temp_unix = new Date(data_details_FX[0].FX_index[t_stop]);
+                                let temp_unix_no = temp_unix.getTime();
+                                //
+                                let temp_value_m = Number(data_details_FX[0].FX_values[t_stop]);
+                                //                                
+                                plot_data.push([temp_unix_no, Math.round(temp_value_m * 1000) / 1000])
+                            }
+                            this.lineChartFXPlot = new StockChart(this.lineChartFXPlotOptions);
+                            //Setting
+                            this.lineChartFXPlotOptions.series[0].data = plot_data;                            //
+                            this.flag_fxPLOT = true;
+                            //
+                            //NEER
+                            //
+                            const plot_data2 = [];
+                            for (var t_stop = 1;t_stop < data_details_NEER[0].NEER_index.length;t_stop++){
+                                let temp_unix = new Date(data_details_NEER[0].NEER_index[t_stop]);
+                                let temp_unix_no = temp_unix.getTime();
+                                //
+                                let temp_value_m = Number(data_details_NEER[0].NEER_values[t_stop]);
+                                //                                
+                                plot_data2.push([temp_unix_no, Math.round(temp_value_m * 1000) / 1000])
+                            }
+                            this.lineChartNEERPlot = new StockChart(this.lineChartNEERPlotOptions);
+                            //Setting
+                            this.lineChartNEERPlotOptions.series[0].data = plot_data2;                            //
+                            this.flag_NEERPLOT = true;                            
+                            //
+                            //REER
+                            //
+                            const plot_data3 = [];
+                            for (var t_stop = 1;t_stop < data_details_REER[0].REER_index.length;t_stop++){
+                                let temp_unix = new Date(data_details_REER[0].REER_index[t_stop]);
+                                let temp_unix_no = temp_unix.getTime();
+                                //
+                                let temp_value_m = Number(data_details_REER[0].REER_values[t_stop]);
+                                //                                
+                                plot_data3.push([temp_unix_no, Math.round(temp_value_m * 1000) / 1000])
+                            }
+                            this.lineChartREERPlot = new StockChart(this.lineChartREERPlotOptions);
+                            //Setting
+                            this.lineChartREERPlotOptions.series[0].data = plot_data3;                            //
+                            this.flag_REERPLOT = true;   
+                            //
+                            this.flag_fx = true;
+                        }
+                });
+
+            });
+
+        });
+    }
+    
+    async pullingVaRData(){
+        //
+        var countrySelectedCurve = this.countrySelected;
+        if (countrySelectedCurve == "United Kingdom"){
+            countrySelectedCurve = "UK";
+        }else if (countrySelectedCurve == "United States"){
+            countrySelectedCurve = "US";
+        }
+        //VaR
+        this.http.get<VaR_Data>('https://api.alphahuntsman.com/valueatrisk/VaR?country='+countrySelectedCurve)
+         .subscribe((data_VaR: VaR_Data) => {
+            //Get timepoints
+            if(!data_VaR){
+                this.flag_VaR = false;
+            }else{
+                //Growth
+                if (data_VaR.Growth_index){
+                    const plot_data_q10 = [];
+                    const plot_data_CreditTOGDP = [];
+                    const plot_data_CreditTOGDPNFC = [];
+                    const plot_data_CreditTOGDPNF = [];
+                    const plot_data_NPLTOLoans = [];
+                    const plot_data_LiquidityAssets = [];
+                    const plot_data_ComRELoans = [];
+                    const plot_data_ResidRELoans = [];
+                    const plot_data_RHousePrice = [];
+                    const plot_data_HouPricInc = [];
+                    const plot_data_HouPricRent = [];
+                    const plot_data_LongYield = [];
+                    const plot_data_ShortYield = [];
+                    const plot_data_TermSpread = [];
+                    for (var t_stop = 1;t_stop < data_VaR.Growth_index.length;t_stop++){
+                        let temp_unix = new Date(data_VaR.Growth_index[t_stop]);
+                        let temp_unix_no = temp_unix.getTime();
+                        //
+                        if (data_VaR.Growth_q10_values){
+                            plot_data_q10.push([temp_unix_no, Math.round(Number(data_VaR.Growth_q10_values[t_stop]) * 1000) / 1000])
+                        }
+                        if (data_VaR.Growth_CreditTOGDP_values){
+                            plot_data_CreditTOGDP.push([temp_unix_no, Math.round(Number(data_VaR.Growth_CreditTOGDP_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_CreditTOGDPNFC_values){
+                            plot_data_CreditTOGDPNFC.push([temp_unix_no, Math.round(Number(data_VaR.Growth_CreditTOGDPNFC_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_CreditTOGDPNF_values){
+                            plot_data_CreditTOGDPNF.push([temp_unix_no, Math.round(Number(data_VaR.Growth_CreditTOGDPNF_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_NPLTOLoans_values){
+                            plot_data_NPLTOLoans.push([temp_unix_no, Math.round(Number(data_VaR.Growth_NPLTOLoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_LiquidityAssets_values){
+                            plot_data_LiquidityAssets.push([temp_unix_no, Math.round(Number(data_VaR.Growth_LiquidityAssets_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_ComRELoans_values){
+                            plot_data_ComRELoans.push([temp_unix_no, Math.round(Number(data_VaR.Growth_ComRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_ResidRELoans_values){
+                            plot_data_ResidRELoans.push([temp_unix_no, Math.round(Number(data_VaR.Growth_ResidRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_RHousePrice_values){
+                            plot_data_RHousePrice.push([temp_unix_no, Math.round(Number(data_VaR.Growth_RHousePrice_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_HouPricInc_values){
+                            plot_data_HouPricInc.push([temp_unix_no, Math.round(Number(data_VaR.Growth_HouPricInc_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_HouPricRent_values){
+                            plot_data_HouPricRent.push([temp_unix_no, Math.round(Number(data_VaR.Growth_HouPricRent_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_LongYield_values){
+                            plot_data_LongYield.push([temp_unix_no, Math.round(Number(data_VaR.Growth_LongYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_ShortYield_values){
+                            plot_data_ShortYield.push([temp_unix_no, Math.round(Number(data_VaR.Growth_ShortYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Growth_TermSpread_values){
+                            plot_data_TermSpread.push([temp_unix_no, Math.round(Number(data_VaR.Growth_TermSpread_values[t_stop]) * 1000) / 10])
+                        }
+                    }
+                    this.lineChartVaRGrowthDrivers = new StockChart(this.lineChartVaRGrowthDriversOptions);
+                    this.lineChartVaRGrowthQuantile = new StockChart(this.lineChartVaRGrowthQuantileOptions);
+                    this.lineChartVaRGrowthDriversOptions.series = [];
+                    this.lineChartVaRGrowthQuantileOptions.series = [];
+                    //Setting
+                    if(plot_data_CreditTOGDP.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP",
+                            data: plot_data_CreditTOGDP
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNFC.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP NFC",
+                            data: plot_data_CreditTOGDPNFC
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNF.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP non-financials",
+                            data: plot_data_CreditTOGDPNF
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_NPLTOLoans.length > 0){
+                        var entry : any = {
+                            name: "Nonperforming liabilities to loans",
+                            data: plot_data_NPLTOLoans
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_LiquidityAssets.length > 0){
+                        var entry : any = {
+                            name: "Liquidity of assets",
+                            data: plot_data_LiquidityAssets
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ComRELoans.length > 0){
+                        var entry : any = {
+                            name: "Com. real estate loans",
+                            data: plot_data_ComRELoans
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ResidRELoans.length > 0){
+                        var entry : any = {
+                            name: "Residential real estate loans",
+                            data: plot_data_ResidRELoans
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_RHousePrice.length > 0){
+                        var entry : any = {
+                            name: "Residential house prices",
+                            data: plot_data_RHousePrice
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_HouPricInc.length > 0){
+                        var entry : any = {
+                            name: "House price to income",
+                            data: plot_data_HouPricInc
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_HouPricRent.length > 0){
+                        var entry : any = {
+                            name: "House price to rent",
+                            data: plot_data_HouPricRent
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_LongYield.length > 0){
+                        var entry : any = {
+                            name: "Long yields",
+                            data: plot_data_LongYield
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }       
+                    if(plot_data_ShortYield.length > 0){
+                        var entry : any = {
+                            name: "Short yields",
+                            data: plot_data_ShortYield
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_TermSpread.length > 0){
+                        var entry : any = {
+                            name: "Term spread",
+                            data: plot_data_TermSpread
+                        };
+                        this.lineChartVaRGrowthDriversOptions.series.push(entry);
+                    }      
+                    //
+                    var entry : any = {
+                        name: "Tail value",
+                        data: plot_data_q10,
+                        color: "#009DA0"
+                    };
+                    this.lineChartVaRGrowthQuantileOptions.series.push(entry);
+                    //Setting
+                    this.flag_VaRGrowthPLOT = true;
+                }
+                //Inflation
+                if (data_VaR.CPI_index){
+                    const plot_data_q10 = [];
+                    const plot_data_CreditTOGDP = [];
+                    const plot_data_CreditTOGDPNFC = [];
+                    const plot_data_CreditTOGDPNF = [];
+                    const plot_data_NPLTOLoans = [];
+                    const plot_data_LiquidityAssets = [];
+                    const plot_data_ComRELoans = [];
+                    const plot_data_ResidRELoans = [];
+                    const plot_data_RHousePrice = [];
+                    const plot_data_HouPricInc = [];
+                    const plot_data_HouPricRent = [];
+                    const plot_data_LongYield = [];
+                    const plot_data_ShortYield = [];
+                    const plot_data_TermSpread = [];
+                    for (var t_stop = 1;t_stop < data_VaR.CPI_index.length;t_stop++){
+                        let temp_unix = new Date(data_VaR.CPI_index[t_stop]);
+                        let temp_unix_no = temp_unix.getTime();
+                        //
+                        if (data_VaR.CPI_q10_values){
+                            plot_data_q10.push([temp_unix_no, Math.round(Number(data_VaR.CPI_q10_values[t_stop]) * 1000) / 1000])
+                        }
+                        if (data_VaR.CPI_CreditTOGDP_values){
+                            plot_data_CreditTOGDP.push([temp_unix_no, Math.round(Number(data_VaR.CPI_CreditTOGDP_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_CreditTOGDPNFC_values){
+                            plot_data_CreditTOGDPNFC.push([temp_unix_no, Math.round(Number(data_VaR.CPI_CreditTOGDPNFC_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_CreditTOGDPNF_values){
+                            plot_data_CreditTOGDPNF.push([temp_unix_no, Math.round(Number(data_VaR.CPI_CreditTOGDPNF_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_NPLTOLoans_values){
+                            plot_data_NPLTOLoans.push([temp_unix_no, Math.round(Number(data_VaR.CPI_NPLTOLoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_LiquidityAssets_values){
+                            plot_data_LiquidityAssets.push([temp_unix_no, Math.round(Number(data_VaR.CPI_LiquidityAssets_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_ComRELoans_values){
+                            plot_data_ComRELoans.push([temp_unix_no, Math.round(Number(data_VaR.CPI_ComRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_ResidRELoans_values){
+                            plot_data_ResidRELoans.push([temp_unix_no, Math.round(Number(data_VaR.CPI_ResidRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_RHousePrice_values){
+                            plot_data_RHousePrice.push([temp_unix_no, Math.round(Number(data_VaR.CPI_RHousePrice_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_HouPricInc_values){
+                            plot_data_HouPricInc.push([temp_unix_no, Math.round(Number(data_VaR.CPI_HouPricInc_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_HouPricRent_values){
+                            plot_data_HouPricRent.push([temp_unix_no, Math.round(Number(data_VaR.CPI_HouPricRent_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_LongYield_values){
+                            plot_data_LongYield.push([temp_unix_no, Math.round(Number(data_VaR.CPI_LongYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_ShortYield_values){
+                            plot_data_ShortYield.push([temp_unix_no, Math.round(Number(data_VaR.CPI_ShortYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.CPI_TermSpread_values){
+                            plot_data_TermSpread.push([temp_unix_no, Math.round(Number(data_VaR.CPI_TermSpread_values[t_stop]) * 1000) / 10])
+                        }
+                    }
+                    this.lineChartVaRInflationDrivers = new StockChart(this.lineChartVaRInflationDriversOptions);
+                    this.lineChartVaRInflationQuantile = new StockChart(this.lineChartVaRInflationQuantileOptions);
+                    this.lineChartVaRInflationDriversOptions.series = [];
+                    this.lineChartVaRInflationQuantileOptions.series = [];
+                    //Setting
+                    if(plot_data_CreditTOGDP.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP",
+                            data: plot_data_CreditTOGDP
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNFC.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP NFC",
+                            data: plot_data_CreditTOGDPNFC
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNF.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP non-financials",
+                            data: plot_data_CreditTOGDPNF
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_NPLTOLoans.length > 0){
+                        var entry : any = {
+                            name: "Nonperforming liabilities to loans",
+                            data: plot_data_NPLTOLoans
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_LiquidityAssets.length > 0){
+                        var entry : any = {
+                            name: "Liquidity of assets",
+                            data: plot_data_LiquidityAssets
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ComRELoans.length > 0){
+                        var entry : any = {
+                            name: "Com. real estate loans",
+                            data: plot_data_ComRELoans
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ResidRELoans.length > 0){
+                        var entry : any = {
+                            name: "Residential real estate loans",
+                            data: plot_data_ResidRELoans
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_RHousePrice.length > 0){
+                        var entry : any = {
+                            name: "Residential house prices",
+                            data: plot_data_RHousePrice
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_HouPricInc.length > 0){
+                        var entry : any = {
+                            name: "House price to income",
+                            data: plot_data_HouPricInc
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_HouPricRent.length > 0){
+                        var entry : any = {
+                            name: "House price to rent",
+                            data: plot_data_HouPricRent
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_LongYield.length > 0){
+                        var entry : any = {
+                            name: "Long yields",
+                            data: plot_data_LongYield
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }       
+                    if(plot_data_ShortYield.length > 0){
+                        var entry : any = {
+                            name: "Short yields",
+                            data: plot_data_ShortYield
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_TermSpread.length > 0){
+                        var entry : any = {
+                            name: "Term spread",
+                            data: plot_data_TermSpread
+                        };
+                        this.lineChartVaRInflationDriversOptions.series.push(entry);
+                    }      
+                    //
+                    var entry : any = {
+                        name: "Tail value",
+                        data: plot_data_q10,
+                        color: "#009DA0"
+                    };
+                    this.lineChartVaRInflationQuantileOptions.series.push(entry);
+                    //Setting
+                    this.flag_VaRInflationPLOT = true;
+                }
+                //Equities
+                if (data_VaR.Equities_index){
+                    const plot_data_q10 = [];
+                    const plot_data_CreditTOGDP = [];
+                    const plot_data_CreditTOGDPNFC = [];
+                    const plot_data_CreditTOGDPNF = [];
+                    const plot_data_NPLTOLoans = [];
+                    const plot_data_LiquidityAssets = [];
+                    const plot_data_ComRELoans = [];
+                    const plot_data_ResidRELoans = [];
+                    const plot_data_RHousePrice = [];
+                    const plot_data_HouPricInc = [];
+                    const plot_data_HouPricRent = [];
+                    const plot_data_LongYield = [];
+                    const plot_data_ShortYield = [];
+                    const plot_data_TermSpread = [];
+                    for (var t_stop = 1;t_stop < data_VaR.Equities_index.length;t_stop++){
+                        let temp_unix = new Date(data_VaR.Equities_index[t_stop]);
+                        let temp_unix_no = temp_unix.getTime();
+                        //
+                        if (data_VaR.Equities_q10_values){
+                            plot_data_q10.push([temp_unix_no, Math.round(Number(data_VaR.Equities_q10_values[t_stop]) * 1000) / 1000])
+                        }
+                        if (data_VaR.Equities_CreditTOGDP_values){
+                            plot_data_CreditTOGDP.push([temp_unix_no, Math.round(Number(data_VaR.Equities_CreditTOGDP_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_CreditTOGDPNFC_values){
+                            plot_data_CreditTOGDPNFC.push([temp_unix_no, Math.round(Number(data_VaR.Equities_CreditTOGDPNFC_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_CreditTOGDPNF_values){
+                            plot_data_CreditTOGDPNF.push([temp_unix_no, Math.round(Number(data_VaR.Equities_CreditTOGDPNF_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_NPLTOLoans_values){
+                            plot_data_NPLTOLoans.push([temp_unix_no, Math.round(Number(data_VaR.Equities_NPLTOLoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_LiquidityAssets_values){
+                            plot_data_LiquidityAssets.push([temp_unix_no, Math.round(Number(data_VaR.Equities_LiquidityAssets_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_ComRELoans_values){
+                            plot_data_ComRELoans.push([temp_unix_no, Math.round(Number(data_VaR.Equities_ComRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_ResidRELoans_values){
+                            plot_data_ResidRELoans.push([temp_unix_no, Math.round(Number(data_VaR.Equities_ResidRELoans_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_RHousePrice_values){
+                            plot_data_RHousePrice.push([temp_unix_no, Math.round(Number(data_VaR.Equities_RHousePrice_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_HouPricInc_values){
+                            plot_data_HouPricInc.push([temp_unix_no, Math.round(Number(data_VaR.Equities_HouPricInc_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_HouPricRent_values){
+                            plot_data_HouPricRent.push([temp_unix_no, Math.round(Number(data_VaR.Equities_HouPricRent_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_LongYield_values){
+                            plot_data_LongYield.push([temp_unix_no, Math.round(Number(data_VaR.Equities_LongYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_ShortYield_values){
+                            plot_data_ShortYield.push([temp_unix_no, Math.round(Number(data_VaR.Equities_ShortYield_values[t_stop]) * 1000) / 10])
+                        }
+                        if (data_VaR.Equities_TermSpread_values){
+                            plot_data_TermSpread.push([temp_unix_no, Math.round(Number(data_VaR.Equities_TermSpread_values[t_stop]) * 1000) / 10])
+                        }
+                    }
+                    this.lineChartVaREquitiesDrivers = new StockChart(this.lineChartVaREquitiesDriversOptions);
+                    this.lineChartVaREquitiesQuantile = new StockChart(this.lineChartVaREquitiesQuantileOptions);
+                    this.lineChartVaREquitiesDriversOptions.series = [];
+                    this.lineChartVaREquitiesQuantileOptions.series = [];
+                    //Setting
+                    if(plot_data_CreditTOGDP.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP",
+                            data: plot_data_CreditTOGDP
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNFC.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP NFC",
+                            data: plot_data_CreditTOGDPNFC
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_CreditTOGDPNF.length > 0){
+                        var entry : any = {
+                            name: "Credit-to-GDP non-financials",
+                            data: plot_data_CreditTOGDPNF
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_NPLTOLoans.length > 0){
+                        var entry : any = {
+                            name: "Nonperforming liabilities to loans",
+                            data: plot_data_NPLTOLoans
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_LiquidityAssets.length > 0){
+                        var entry : any = {
+                            name: "Liquidity of assets",
+                            data: plot_data_LiquidityAssets
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ComRELoans.length > 0){
+                        var entry : any = {
+                            name: "Com. real estate loans",
+                            data: plot_data_ComRELoans
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_ResidRELoans.length > 0){
+                        var entry : any = {
+                            name: "Residential real estate loans",
+                            data: plot_data_ResidRELoans
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_RHousePrice.length > 0){
+                        var entry : any = {
+                            name: "Residential house prices",
+                            data: plot_data_RHousePrice
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }
+                    if(plot_data_HouPricInc.length > 0){
+                        var entry : any = {
+                            name: "House price to income",
+                            data: plot_data_HouPricInc
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_HouPricRent.length > 0){
+                        var entry : any = {
+                            name: "House price to rent",
+                            data: plot_data_HouPricRent
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_LongYield.length > 0){
+                        var entry : any = {
+                            name: "Long yields",
+                            data: plot_data_LongYield
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }       
+                    if(plot_data_ShortYield.length > 0){
+                        var entry : any = {
+                            name: "Short yields",
+                            data: plot_data_ShortYield
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }                    
+                    if(plot_data_TermSpread.length > 0){
+                        var entry : any = {
+                            name: "Term spread",
+                            data: plot_data_TermSpread
+                        };
+                        this.lineChartVaREquitiesDriversOptions.series.push(entry);
+                    }      
+                    //
+                    var entry : any = {
+                        name: "Tail value",
+                        data: plot_data_q10,
+                        color: "#009DA0"
+                    };
+                    this.lineChartVaREquitiesQuantileOptions.series.push(entry);
+                    //Setting
+                    this.flag_VaREquitiesPLOT = true;
+                }
+                //
+                this.flag_VaR = true;
+            }
+        }
+        );
+    }
+    
+    async pullingGrowthSupplyDemandTri(){
+        //Load scenarions
+        var countrySelectedCurve = this.countrySelected;
+        if (countrySelectedCurve == "United Kingdom"){
+            countrySelectedCurve = "UK";
+        }else if (countrySelectedCurve == "United States"){
+            countrySelectedCurve = "US";
+        }
+        this.http.get<Growth_SupplyDemandTri>('https://api.alphahuntsman.com/growthdecomposed/supplydemandTri?country='+countrySelectedCurve).subscribe(
+            (data_pulled : Growth_SupplyDemandTri) => {
+                if(data_pulled){
+                    const plot_data_supply = [];
+                    const plot_data_demand = [];
+                    const plot_data_longrun = [];
+                    for (var t_stop = 1;t_stop < data_pulled.Growth_index.length;t_stop++){
+                        let temp_unix = new Date(data_pulled.Growth_index[t_stop]);
+                        let temp_unix_no = temp_unix.getTime();
+                        plot_data_supply.push([temp_unix_no, Math.round(Number(data_pulled.Growth_supply[t_stop]) * 1000) / 1000])
+                        plot_data_demand.push([temp_unix_no, Math.round(Number(data_pulled.Growth_demand[t_stop]) * 1000) / 1000])
+                        plot_data_longrun.push([temp_unix_no, Math.round(Number(data_pulled.Growth_longrun[t_stop]) * 1000) / 1000])
+                    }
+                    //
+                    this.lineChartGrowthSupplyDemandTriPlot = new StockChart(this.lineChartGrowthSupplyDemandTriOptions);
+                    this.lineChartGrowthSupplyDemandTriOptions.series[0].data = plot_data_supply;
+                    this.lineChartGrowthSupplyDemandTriOptions.series[1].data = plot_data_demand;
+                    this.lineChartGrowthSupplyDemandTriOptions.series[2].data = plot_data_longrun;
+                    this.flagGrowthSupplyTriDemand = true;
+                }else{
+                    this.flagGrowthSupplyTriDemand = false;
+                    //No such country
+                }
+        });
+    }
+    
+    
+    async pullingGrowthSupplyDemand(){
+        //Load scenarions
+        var countrySelectedCurve = this.countrySelected;
+        if (countrySelectedCurve == "United Kingdom"){
+            countrySelectedCurve = "UK";
+        }else if (countrySelectedCurve == "United States"){
+            countrySelectedCurve = "US";
+        }
+        this.http.get<Growth_SupplyDemand>('https://api.alphahuntsman.com/growthdecomposed/supplydemand?country='+countrySelectedCurve).subscribe(
+            (data_pulled : Growth_SupplyDemand) => {
+                if(data_pulled){
+                    const plot_data_supply = [];
+                    const plot_data_demand = [];
+                    const plot_data_actual = [];
+                    for (var t_stop = 1;t_stop < data_pulled.Growth_index.length;t_stop++){
+                        let temp_unix = new Date(data_pulled.Growth_index[t_stop]);
+                        let temp_unix_no = temp_unix.getTime();
+                        plot_data_supply.push([temp_unix_no, Math.round(Number(data_pulled.Growth_supply[t_stop]) * 1000) / 1000])
+                        plot_data_demand.push([temp_unix_no, Math.round(Number(data_pulled.Growth_demand[t_stop]) * 1000) / 1000])
+                        plot_data_actual.push([temp_unix_no, Math.round(Number(data_pulled.Growth_actual[t_stop]) * 1000) / 1000])
+                    }
+                    //
+                    this.lineChartGrowthSupplyDemandPlot = new StockChart(this.lineChartGrowthSupplyDemandOptions);
+                    this.lineChartGrowthSupplyDemandOptions.series[0].data = plot_data_supply;
+                    this.lineChartGrowthSupplyDemandOptions.series[1].data = plot_data_demand;
+                    this.lineChartGrowthSupplyDemandOptions.series[2].data = plot_data_actual;
+                    this.flagGrowthSupplyDemand = true;
+                }else{
+                    this.flagGrowthSupplyDemand = false;
+                    //No such country
+                }
+        });
+    }
+    
+    async pullingCurveData(){
+        //Get tenors
+        var countrySelectedCurve = this.countrySelected;
+        if (countrySelectedCurve == "United Kingdom"){
+            countrySelectedCurve = "UK";
+        }else if (countrySelectedCurve == "United States"){
+            countrySelectedCurve = "US";
+        }else if (countrySelectedCurve == "EA"){
+            countrySelectedCurve = "Euro Area";
+        }
+        //Load scenarions
+        this.http.get<string[]>('https://api.alphahuntsman.com/chronos/tenors?country='+countrySelectedCurve+'&scenario='+this.selectedScenario).subscribe((data_tenors: string[]) => {
+            this.tenorList = new Array<string>();
+            for(var t_stop of data_tenors){
+                this.tenorList.push(t_stop);
+            }
+            //Plot data
+            this.http.get<Curve_Data[]>('https://api.alphahuntsman.com/chronos?country='+countrySelectedCurve+'&scenario='+this.selectedScenario)
+             .subscribe((data_details: Curve_Data[]) => {
+                //Get timepoints
+                this.timepointList = new Array<string>();
+                for (var t_stop of data_details){
+                    if(!this.timepointList.includes(t_stop.time)){
+                        this.timepointList.push(t_stop.time);
+                    }
+                    //this.refreshDate = t_stop.updatedDate;
+                    //this.refreshDate_next = t_stop.updatedDate_next;
+                }
+                this.timepointList = this.timepointList.sort();
+                this.currentTimepoint = this.timepointList[0];
+                this.selectedTimepoint = this.timepointList[1];
+                this.timepointList = this.timepointList.slice(1);
+                //Select loaded data
+                this.pulledCurvedData = data_details;
+                //
+                if(this.tenorList.length < 1){
+                    this.curvePlotFlag = false;
+                }else{
+                    this.plottingSelectedCurve();
+                }
+            });
+        });
+    }
+    
+    //
+    plottingSelectedCurve(){
+        var curve_data_now = this.pulledCurvedData.filter(stop => stop.time == this.currentTimepoint);
+        var curve_data_next = this.pulledCurvedData.filter(stop => stop.time == this.selectedTimepoint);
+        //Sort by tenors
+        curve_data_now = curve_data_now.sort(function(a, b) {
+            return a.tenor - b.tenor;
+        });
+        curve_data_next = curve_data_next.sort(function(a, b) {
+            return a.tenor - b.tenor;
+        });
+        var curve_data_now_final = [];
+        for(var t_inner of curve_data_now){
+            curve_data_now_final.push(t_inner.value)
+        }
+        var curve_data_next_final = [];
+        for(var t_inner of curve_data_next){
+            curve_data_next_final.push(t_inner.value)
+        }
+        this.curvePlotOptions.series[0].data = curve_data_now_final;
+        this.curvePlotOptions.series[1].data = curve_data_next_final;
+        this.curvePlot = new Chart(this.curvePlotOptions);
+        this.curvePlotFlag = true;
+        window.dispatchEvent(new Event('resize'));
+    }
+    //modalService
+    //content
+    //title
 }

@@ -7,26 +7,29 @@ export const Full_ROUTES: Routes = [
     path: 'atlas',
     loadChildren: () => import('../../atlas/atlas.module').then(m => m.AtlasModule)
   },
-  {
-    path: 'faq',
-    loadChildren: () => import('../../faq/faq.module').then(m => m.FAQModule)
-  },
-  {
-    path: 'pricing',
-    loadChildren: () => import('../../pricing/pricing.module').then(m => m.PricingModule)
-  },
+//  {
+//    path: 'faq',
+//    loadChildren: () => import('../../faq/faq.module').then(m => m.FAQModule)
+//  },
+//  {
+//    path: 'support',
+//    loadChildren: () => import('../../pricing/pricing.module').then(m => m.PricingModule)
+//  },
   {
     path: 'about',
     loadChildren: () => import('../../about/about.module').then(m => m.AboutModule)
   },
-  
   {
-    path: 'forms',
-    loadChildren: () => import('../../forms/forms.module').then(m => m.FormModule)
+    path: 'spectrum',
+    loadChildren: () => import('../../spectrum/spectrum.module').then(m => m.SpectrumModule)
   },
   {
-    path: 'tables',
-    loadChildren: () => import('../../tables/tables.module').then(m => m.TablesModule)
+    path: 'oracle',
+    loadChildren: () => import('../../oracle/oracle.module').then(m => m.OracleModule)
+  },
+  {
+    path: 'chronos',
+    loadChildren: () => import('../../chronos/chronos.module').then(m => m.ChronosModule)
   },
   {
     path: 'pages',

@@ -1,0 +1,234 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">Tactical positioning</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<section id="hoverable-rows">
+			<div class="row text-left">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row justify-content-between">
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-header">
+								Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.01</span> next refresh due at 
+								<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd HH:mm' }}</span>.
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="leverageChartPlotFlag" [chart]="leverageChartPlot"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="tiltsChartPlotFlag" [chart]="tiltsChartPlot"></div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-12">
+										<div *ngIf="bubbleChartPlotFlag" [chart]="bubbleChartPlot"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-sm-12">
+		<section id="hoverable-rows">
+			<div class="row text-left">
+				<div class="col-sm-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="row justify-content-between">
+								<div class="col-2">
+									<div ngbDropdown>
+										<h4 class="primary type-info">Assets </h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ assetClassSelected }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+											<button class="dropdown-item" *ngFor="let stop_asset of assetClassList" (click)="assetClassSelectorDrop(stop_asset)" >{{stop_asset}}</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-2">
+									<div ngbDropdown>
+										<h4 class="primary type-info">Region </h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ countrySelected }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+											<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)" >{{stop_country}}</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-3">
+									<div ngbDropdown>
+										<h4 class="success type-info">Coverage</h4>
+										<button class="btn btn-outline-success mr-1" id="dropdownCoverage" ngbDropdownToggle>{{ selectedSector }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+											<button class="dropdown-item" *ngFor="let stop_sector of sectorList" (click)="sectorSelectorDrop(stop_sector)" >{{stop_sector}}</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-2">
+									<div ngbDropdown>
+										<h4 class="danger type-info">Scenario </h4>
+										<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedScenario }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+											<button class="dropdown-item" *ngFor="let stop_scenario of scenarionList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-2">
+									<div ngbDropdown>
+										<h4 class="danger type-info">Currency </h4>
+										<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedCurrency }}</button>
+										<div ngbDropdownMenu aria-labelledby="dropdownCurrency">
+											<button class="dropdown-item" *ngFor="let stop_currency of currencyList" (click)="currencySelectorDrop(stop_currency)" >{{stop_currency}}</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-header">
+								Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.01</span> next refresh due at 
+								<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd HH:mm' }}</span>.
+							</div>
+							<!--- 
+							<div class="card-body" *ngIf="!this.currentUser">
+								<div class="row text-center">
+								    <div class="col-sm-12">
+							          <h4 class="danger card-title">Registration is required for pricing access</h4>
+								    </div>
+							    </div>
+							</div>
+							*ngIf="this.currentUser"
+							--->
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="lineChartPriceFutureFlag" [chart]="lineChartPriceFuture"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="lineChartPriceGapFlag" [chart]="lineChartPriceGap"></div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row" *ngIf="lineChartPriceDecomposeMacroContFlag && lineChartPriceDecomposeMacroCDFFlag">
+									<div class="col-4">
+										<div *ngIf="lineChartPriceDecomposeMacroFlag" [chart]="lineChartPriceDecomposeMacro"></div>
+									</div>
+									<div class="col-4">
+										<div *ngIf="lineChartPriceDecomposeMacroContFlag" [chart]="lineChartPriceDecomposeMacroCont"></div>
+									</div>
+									<div class="col-4">
+										<div *ngIf="lineChartPriceDecomposeMacroCDFFlag" [chart]="lineChartPriceDecomposeMacroCDF"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="!lineChartPriceDecomposeMacroContFlag && lineChartPriceDecomposeMacroCDFFlag">
+									<div class="col-6">
+										<div *ngIf="lineChartPriceDecomposeMacroFlag" [chart]="lineChartPriceDecomposeMacro"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="lineChartPriceDecomposeMacroCDFFlag" [chart]="lineChartPriceDecomposeMacroCDF"></div>
+									</div>
+								</div>
+								<div class="row" *ngIf="!lineChartPriceDecomposeMacroCDFFlag && !lineChartPriceDecomposeMacroContFlag && lineChartPriceDecomposeMacroFlag">
+									<div class="col-12">
+										<div *ngIf="lineChartPriceDecomposeMacroFlag" [chart]="lineChartPriceDecomposeMacro"></div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="lineChartPriceFutureFlag" [chart]="lineChartPriceFuture"></div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12">
+										<div *ngIf="lineChartGrowthFlag" [chart]="lineChartGrowth"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="lineChartWeeklyMacroDecompositionFlag" [chart]="lineChartWeeklyMacroDecomposition"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="lineChartmonthlyMacroDecompositionFlag" [chart]="lineChartmonthlyMacroDecomposition"></div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="lineChartquarterlyMacroDecompositionFlag" [chart]="lineChartquarterlyMacroDecomposition"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="lineChartWeeklyGrowthDecompositionFlag" [chart]="lineChartWeeklyGrowthDecomposition"></div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div *ngIf="lineChartMonthlyGrowthDecompositionFlag" [chart]="lineChartMonthlyGrowthDecomposition"></div>
+									</div>
+									<div class="col-6">
+										<div *ngIf="lineChartQuarterlyGrowthDecompositionFlag" [chart]="lineChartQuarterlyGrowthDecomposition"></div>
+									</div>
+								</div>
+							</div>
+								<!---
+
+									<div class="col-6">
+										<div class="card-header">
+											Returns expectations
+										</div>
+										<div class="card-body">
+											<table class="table table-sm" *ngIf="returnsTableFlag">
+												<thead>
+													<tr>
+														<th>Horizon</th>
+														<th>Mean</th>
+														<th>Lower</th>
+														<th>Upper</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr *ngFor="let t_item_d of this.returnsTableData">
+														<th scope="row"><a class="card-link primary">{{t_item_d.time_point}}</a></th>
+														<td>{{t_item_d.value_mean}}</td>
+														<td>{{t_item_d.value_lower}}</td>
+														<td>{{t_item_d.value_upper}}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								--->
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>

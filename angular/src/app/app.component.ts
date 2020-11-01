@@ -3,6 +3,8 @@ import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
+declare let gtag:Function;
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html'
@@ -12,6 +14,11 @@ export class AppComponent implements OnInit, OnDestroy {
     subscription: Subscription;
 
     constructor(private router: Router) {
+        this.router.events.subscribe((y: NavigationEnd) => {
+          if(y instanceof NavigationEnd){
+            gtag('config','UA-32819575-1',{'page_path' : y.url});
+          }
+        })
     }
 
     ngOnInit() {

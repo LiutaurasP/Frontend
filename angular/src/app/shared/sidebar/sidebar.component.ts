@@ -102,8 +102,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout() {
-    console.log("Logout");
-    //this.authenticationService.logout();
-    //this.router.navigate(['/login']);
+    this.authenticationService.logout();
+    this.router.navigate(['/login']);
   }
 }

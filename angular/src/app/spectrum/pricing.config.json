@@ -1,0 +1,154 @@
+{   
+    "dayCount":[
+        {"Actual360"},
+        {"Actual365Fixed"},
+        {"Actual365NoLeap"},
+        {"ActualActual"},
+        {"Business252"},
+        {"Thirty360"}
+    ],
+    
+    "calendar":[
+        {"Argentina"},
+        {"Australia"},
+        {"Botswana"},
+        {"Brazil"},
+        {"Canada"},
+        {"China"},
+        {"CzechRepublic"},
+        {"Denmark"},
+        {"Finland"},
+        {"Germany"},
+        {"HongKong"},
+        {"Hungary"},
+        {"Iceland"},
+        {"India"},
+        {"Indonesia"},
+        {"Israel"},
+        {"Italy"},
+        {"Japan"},
+        {"Mexico"},
+        {"NewZealand"},
+        {"Norway"},
+        {"Poland"},
+        {"Romania"},
+        {"Russia"},
+        {"SaudiArabia"},
+        {"Singapore"},
+        {"Slovakia"},
+        {"SouthAfrica"},
+        {"SouthKorea"},
+        {"Sweden"},
+        {"Switzerland"},
+        {"Taiwan"},
+        {"Turkey"},
+        {"Ukraine"},
+        {"UnitedKingdom"},
+        {"UnitedStates"},
+        {"WeekendsOnly"}
+    ]
+    
+    "interpolation":[
+        {"Linear"}
+    ],
+    
+    "compounding":[
+        {"Compounded"}
+    ],
+    
+    "compoundingFrequency":[
+        {"Annual"},
+        {"Semiannual"},
+        {"Quarterly"}
+        {"Monthly"},
+        {"Bimonthly"},
+        {"Weekly"}
+    ],
+    
+    //Bond data
+    "issueDate",
+    "maturityDate",
+    "maturityDate",
+    
+    "couponFrequency":[
+        {"Once"},
+        {"Annual"},
+        {"Semiannual"},
+        {"EveryFourthMonth"},
+        {"Quarterly"}
+        {"Bimonthly"},
+        {"Monthly"},
+        {"EveryFourthWeek"},
+        {"Biweekly "},
+        {"Weekly"},
+        {"Daily "}
+    ],
+    
+    "calendar":[
+        {"Argentina"},
+        {"Australia"},
+        {"Botswana"},
+        {"Brazil"},
+        {"Canada"},
+        {"China"},
+        {"CzechRepublic"},
+        {"Denmark"},
+        {"Finland"},
+        {"Germany"},
+        {"HongKong"},
+        {"Hungary"},
+        {"Iceland"},
+        {"India"},
+        {"Indonesia"},
+        {"Israel"},
+        {"Italy"},
+        {"Japan"},
+        {"Mexico"},
+        {"NewZealand"},
+        {"Norway"},
+        {"Poland"},
+        {"Romania"},
+        {"Russia"},
+        {"SaudiArabia"},
+        {"Singapore"},
+        {"Slovakia"},
+        {"SouthAfrica"},
+        {"SouthKorea"},
+        {"Sweden"},
+        {"Switzerland"},
+        {"Taiwan"},
+        {"Turkey"},
+        {"Ukraine"},
+        {"UnitedKingdom"},
+        {"UnitedStates"},
+        {"WeekendsOnly"}
+    ],
+    
+    "bussinessConvention":
+    [
+        {"Following"},
+        {"ModifiedFollowing"},
+        {"Preceding"},
+        {"ModifiedPreceding"},
+        {"Unadjusted"},
+        {"HalfMonthModifiedFollowing"},
+        {"Nearest"}
+    ],
+    
+    "dateGeneration":
+    [
+        {"Backward"},
+        {"Forward"},
+        {"Zero"},
+        {"ThirdWednesday"},
+        {"Twentieth"},
+        {"TwentiethIMM"},
+        {"OldCDS"},
+        {"CDS"},
+        {"CDS2015"}
+    ]
+    
+    "couponRate",
+    "faceValue",
+    "settlementDays"
+}

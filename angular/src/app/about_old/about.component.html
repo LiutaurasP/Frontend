@@ -1,0 +1,191 @@
+<section id="user-profile">
+    <div class="row">
+        <div class="col-12">
+            <div class="card profile-with-cover">
+                <div class="card-img-top img-fluid bg-cover height-300" [ngStyle]="{'background-image':'url(' + specs_about_general.img_background + ')'}"></div>
+                <div class="media profil-cover-details row">
+                    <div class="col-5">
+                        <div class="align-self-start halfway-fab pl-3 pt-2">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="align-self-center halfway-fab text-center">
+                            <a class="profile-image">
+                                <img src="{{specs_about_general.img_center}}" class="rounded-circle img-border gradient-summer width-100" alt="Card image">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-5">                        
+                    </div>                    
+                </div>
+                <div class="profile-section">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 ">
+                            <ul class="profile-menu no-list-style">
+                                <li>
+                                    <a (click)="showPage(specs_about_general.name_tab_1)" [ngClass]="currentPage === '+ specs_about_general.name_tab_1 +' ? 'primary font-medium-2 font-weight-600 active' : 'primary font-medium-2 font-weight-600'">{{ specs_about_general.name_tab_1 }}</a>
+                                </li>
+                                <li>
+                                    <a (click)="showPage(specs_about_general.name_tab_2)" [ngClass]="currentPage === '+ specs_about_general.name_tab_2 +' ? 'primary font-medium-2 font-weight-600 active' : 'primary font-medium-2 font-weight-600'">{{ specs_about_general.name_tab_2 }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-2 text-center">
+                        </div>
+                        <div class="col-lg-5 col-md-5">
+                            <ul class="profile-menu no-list-style">
+                                <li>
+                                    <a (click)="showPage(specs_about_general.name_tab_3)" [ngClass]="currentPage === '+ specs_about_general.name_tab_3 +' ? 'primary font-medium-2 font-weight-600 active' : 'primary font-medium-2 font-weight-600'">{{ specs_about_general.name_tab_3 }}</a>
+                                </li>
+                                <li>
+                                    <a (click)="showPage(specs_about_general.name_tab_4)" [ngClass]="currentPage === '+ specs_about_general.name_tab_4 +' ? 'primary font-medium-2 font-weight-600 active' : 'primary font-medium-2 font-weight-600'">{{ specs_about_general.name_tab_4 }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="{{specs_about_general.name_tab_1}}" *ngIf="currentPage === specs_about_general.name_tab_1">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">{{ specs_about_general.name_tab_1 }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="text-bold-500 primary" *ngIf="specs_about_tab1_header">  {{ specs_about_tab1_header.tab_subheader }} </span>
+                            <span class="d-block overflow-hidden" *ngIf="specs_about_tab1_header">
+                                {{ specs_about_tab1_header.tab_subdetails }}
+                            </span>
+                        </div>
+                        
+                        <div *ngFor="let t_item of specs_about_tab1_details">
+                            <hr>
+                            <div class="row" >
+                                <div class="col-sm-3">
+                                    <span class="text-bold-500 primary"><a><i class="{{ t_item.tab_subheader_icon }} font-small-3"></i> {{ t_item.tab_subheader }}</a></span>
+                                </div>
+                                <div class="col-sm-9">
+                                    <span class="d-block overflow-hidden"> {{ t_item.tab_subdetails }}
+                                    </span>
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <span class="d-block overflow-hidden">Status:</span>
+                                </div>
+                                <div class="col-sm-9">
+                                    <span class="d-block overflow-hidden" [innerHTML] = "t_item.tab_status"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id ="{{specs_about_general.name_tab_2}}" *ngIf="currentPage === specs_about_general.name_tab_2">   
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">{{specs_about_general.name_tab_2}}</div>
+        </div>
+    </div>
+    <div id="timeline" class="timeline-center timeline-wrapper">
+        <ul class="timeline" *ngFor="let t_item of specs_about_tab2">
+            <li class="timeline-line" *ngIf="t_item.entry_right"></li><!-- /.timeline-line -->
+            <li class="timeline-line"></li>
+            <li *ngIf="!t_item.entry_details" class="timeline-group">
+                <a class="btn btn-raised btn-primary"><i class="fa {{ t_item.entry_icon }}"></i> {{ t_item.entry_header }}</a>
+            </li>
+            <li *ngIf="t_item.entry_details" class="timeline-item">
+                <div class="timeline-badge">
+                    <span class="bg-red bg-lighten-1" data-toggle="tooltip" data-placement="right" title="{{ t_item.entry_header }}"><i class="fa {{ t_item.entry_icon }}"></i></span>
+                </div>
+                <div class="timeline-card card border-grey border-lighten-2">
+                <div class="card-header">
+                    <h4 class="mb-0 card-title"><a>{{ t_item.entry_header }}</a></h4>
+                </div>
+                <div class="card-content">
+                    <img class="img-fluid" src="{{ t_item.entry_photo }}" alt="Timeline Image 1">
+                    <div class="card-content">
+                    <div class="card-body" [innerHTML] = "t_item.entry_details"></div>
+                    </div>
+                </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</section>
+
+
+<section id="{{specs_about_general.name_tab_3}}" *ngIf="currentPage === specs_about_general.name_tab_3">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">{{specs_about_general.name_tab_3}}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4" *ngFor="let t_item of specs_about_tab3">
+            <div class="card">
+                <div class="card-header text-center">
+                    <img src="{{ t_item.entry_photo }}" alt="Brek" width="150" class="rounded-circle gradient-mint">
+                </div>
+                <div class="card-content">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ t_item.entry_name }}</h4>
+                        <p class="category text-gray font-small-4">{{ t_item.entry_title }}</p>
+                        <hr class="grey">
+                        <div class="row grey">
+                            <div class="col-2">
+                            </div>
+                            <div class="col-8">
+                                <a><span>{{ t_item.entry_desc }}</span></a>
+                            </div>
+                            <div class="col-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="{{specs_about_general.name_tab_4]}" *ngIf="currentPage === specs_about_general.name_tab_4">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">{{specs_about_general.name_tab_4}}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12" *ngFor="let t_item of specs_about_tab4">
+                                <ul class="no-list-style">
+                                    <li class="mb-2">
+                                        <span class="primary text-bold-500"><a><i class="{{ t_item.entry_icon }} font-small-3"></i>{{ t_item.entry_title }}</a></span>
+                                        <span class="line-height-2 d-block overflow-hidden">{{ t_item.entry_email }}<span class="primary text-bold-500">@</span>AlphaHuntsman.com</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

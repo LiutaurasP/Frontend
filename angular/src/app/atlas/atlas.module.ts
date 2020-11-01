@@ -14,8 +14,6 @@ import * as more from 'highcharts/highcharts-more.src';
 import * as exporting from 'highcharts/modules/exporting.src';
 import * as highstock from 'highcharts/modules/stock.src';
 
-
-
 export function highchartsModules() {
   // apply Highcharts Modules to this array
   return [more, exporting, highmaps, highstock];

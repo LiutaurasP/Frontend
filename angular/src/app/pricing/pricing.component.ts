@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 export interface Pricing_Entry{
     access_type: string;
@@ -29,16 +30,21 @@ export class PricingComponent  {
   modal_header_color: string;
   constructor(
     private modalService: NgbModal,
-    private http: HttpClient) {}
+    private http: HttpClient,
+    private router: Router
+  ) {}
     
   ngOnInit() {
     //Timeline
     this.http.get<Pricing_Entry[]>('https://api.alphahuntsman.com/pricing')
         .subscribe((data_details: Pricing_Entry[]) => {
-          this.specs_pricing_free = data_details.filter(entry => entry.access_type === "Free tier");
-          this.specs_pricing_personal = data_details.filter(entry => entry.access_type === "Personal");
-          this.specs_pricing_pro = data_details.filter(entry => entry.access_type === "Professional");
+          this.specs_pricing_free = data_details.filter(entry => entry.access_type === "Enthusiat");
+          this.specs_pricing_personal = data_details.filter(entry => entry.access_type === "Professional");
+          this.specs_pricing_pro = data_details.filter(entry => entry.access_type === "Commercial");
           this.specs_pricing_all = data_details
+        },
+        (err) => {
+          this.router.navigate(['/pages/maintenance']);
         });
   }
 

@@ -70,11 +70,25 @@ export class AuthService {
   }
 
   getToken() {    
+    this.doPing();
     return this.token;
   }
 
   isAuthenticated() {
     // here you can check if user is authenticated or not through his token 
     return true;
+  }
+  
+  doPing(){
+    //Ping API
+    if(this.currentUserValue){
+      this.http.get<string[]>('https://api.alphahuntsman.com/users/ping?ID=' + this.currentUserValue.tempAPI).subscribe((data_ret: string[]) => {
+          let results = new String(data_ret);
+          if(results.localeCompare("OK") != 0){
+            localStorage.removeItem('currentUser');
+            this.currentUserSubject.next(null);
+          }
+      });
+    }
   }
 }

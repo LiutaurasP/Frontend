@@ -6,4 +6,5 @@ export class UserModel {
     status: string;
     createdDate: Date;
     isValidated: boolean;
+    tempAPI: string;
 };

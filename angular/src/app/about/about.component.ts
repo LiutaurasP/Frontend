@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -72,7 +73,7 @@ export class AboutComponent {
     //Variable Declaration
     currentPage: string = "Tab1"
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private router: Router) {
     }
     
     ngOnInit() {
@@ -90,31 +91,34 @@ export class AboutComponent {
         //Pull about info
         this.http.get<About_General>('https://api.alphahuntsman.com/about/primaryDetails')
             .subscribe((data: About_General) => {
-                this.specs_about_general =  data;
-                //Pull individual page contents
-                this.http.get<About_Tab1[]>('https://api.alphahuntsman.com/about/details?sec=one&tab='+this.specs_about_general.name_tab_1)
-                    .subscribe((data_details: About_Tab1[]) => {
-                        this.specs_about_tab1_header = data_details[0];
-                        this.specs_about_tab1_details = data_details.slice(2);
-                        this.showPage(this.specs_about_general.name_tab_1);
+                    this.specs_about_general =  data;
+                    //Pull individual page contents
+                    this.http.get<About_Tab1[]>('https://api.alphahuntsman.com/about/details?sec=one&tab='+this.specs_about_general.name_tab_1)
+                        .subscribe((data_details: About_Tab1[]) => {
+                            this.specs_about_tab1_header = data_details[0];
+                            this.specs_about_tab1_details = data_details.slice(1);
+                            this.showPage(this.specs_about_general.name_tab_1);
+                        });
+                    //Timeline
+                    this.http.get<About_Tab2[]>('https://api.alphahuntsman.com/about/details?sec=two&tab='+this.specs_about_general.name_tab_2)
+                        .subscribe((data_details: About_Tab2[]) => {
+                            this.specs_about_tab2 = data_details;
+                        });
+                    //Team
+                    this.http.get<About_Tab3[]>('https://api.alphahuntsman.com/about/details?sec=three&tab='+this.specs_about_general.name_tab_3)
+                        .subscribe((data_details: About_Tab3[]) => {
+                            this.specs_about_tab3 = data_details;
                     });
-                //Timeline
-                this.http.get<About_Tab2[]>('https://api.alphahuntsman.com/about/details?sec=two&tab='+this.specs_about_general.name_tab_2)
-                    .subscribe((data_details: About_Tab2[]) => {
-                        this.specs_about_tab2 = data_details;
+                    //Contacts
+                    this.http.get<About_Tab4[]>('https://api.alphahuntsman.com/about/details?sec=four&tab='+this.specs_about_general.name_tab_4)
+                        .subscribe((data_details: About_Tab4[]) => {
+                            this.specs_about_tab4 = data_details;
                     });
-                //Team
-                this.http.get<About_Tab3[]>('https://api.alphahuntsman.com/about/details?sec=three&tab='+this.specs_about_general.name_tab_3)
-                    .subscribe((data_details: About_Tab3[]) => {
-                        this.specs_about_tab3 = data_details;
-                });
-                //Contacts
-                this.http.get<About_Tab4[]>('https://api.alphahuntsman.com/about/details?sec=four&tab='+this.specs_about_general.name_tab_4)
-                    .subscribe((data_details: About_Tab4[]) => {
-                        this.specs_about_tab4 = data_details;
-                });
-                
-            });
+                },
+                (err) => {
+                    this.router.navigate(['/pages/maintenance']);
+                }
+            );
     }
 
     showPage(page: string) {
