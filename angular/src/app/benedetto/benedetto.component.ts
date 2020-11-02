@@ -1,139 +1,155 @@
-import { Component , NgZone} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
-
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { interval, Subscription } from 'rxjs';
-import 'rxjs/add/operator/map'
+import { FormControl, FormGroup, Validators, NgForm } from '@angular/forms';
+import { Router } from "@angular/router";
+import { LocalDataSource } from 'ng2-smart-table';
 
-import { MapChart } from 'angular-highcharts';
+import { UserModel } from '../shared/auth/userModel';
+import { AuthService } from '../shared/auth/auth.service';
+
 import { Chart } from 'angular-highcharts';
 import { StockChart } from 'angular-highcharts';
 
+import { BenedettoResults } from './benedettoResultsModel';
+import { BenedettoSeriesModel } from './benedettoSeriesModel';
+
+export interface Economic_Series_Timepoints{
+    measure: string;
+    country: string;
+    variable: string;
+    format: string;
+    time: string;
+    value: number;
+};
+
 @Component({
-    selector: 'app-bendetto',
-    templateUrl: './bendetto.component.html',
-    styleUrls: ['./bendetto.component.scss']
+  selector: 'app-benedetto',
+  templateUrl: './benedetto.component.html',
+  styleUrls: ['./benedetto.component.scss']
 })
 
-
-export class BenedettoComponent {
-    
-//    currentCountryDetailsQoQ : Economic_Series[];
-//    currentCountryDetailsYoY : Economic_Series[];
-    
-    refreshDate: any;
-    refreshDate_next: any;
-
+export class BenedettoComponent implements OnInit{
     //
-    constructor(
-        private http: HttpClient, 
-        private modalService: NgbModal,
-        private router: Router
-        ) { 
+    //Country list
+    countryClassSelected: string= "US";
+    countryList: string[];
+    countryClassSelectorDrop(newSortOrder: string){
+      this.countryClassSelected = newSortOrder;
+      this.pullStats();
     }
-
-    //Dropdown selector
-    selectedScenario: any;
-    scenarionList: string[];
+    
+    //Scenario list  
+    selectedScenario: string= "Baseline";
+    scenarioList: string[];
     scenarioSelectorDrop(newSortOrder: string){
-        this.selectedScenario = newSortOrder;
-        //this.countrySelectorDrop(this.countrySelected);
-    }    
-
-    ngOnInit(){
-        //
-        this.selectedScenario = "Baseline";
-        //Load scenarios
-        this.scenarionList = new Array<string>();
-        this.scenarionList.push("Baseline");
-        //Load scenarions
-        this.http.get<string[]>('https://api.alphahuntsman.com/atlas/scenarios').subscribe((data_scenarions: string[]) => {
-                this.scenarionList = new Array<string>();
-                for(var t_stop of data_scenarions){
-                    this.scenarionList.push(t_stop);
+      this.selectedScenario = newSortOrder;
+      this.pullCountries();
+    }
+    
+    tableData : BenedettoResults[];
+    flagTable : any;
+    //Modal
+    flaglineChart : any;
+    lineChart : any;
+    public lineOptions: any = {
+            title: {
+                text: null
+            },
+            rangeSelector: {
+                enabled:false
+            },
+            yAxis: {
+                title: {
+                    text: "Annualized Change & Uncertainty"
                 }
             },
-            (err) => {
-                this.router.navigate(['/pages/maintenance']);
+
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+                pointFormat: "{series.name}: {point.y:.2f}"
+            },
+
+            legend: {
+                enabled: false
+            },
+
+            series: [{
+                name: 'Growth',
+                color: "#000000",
+                data: []
             }
-        );
+            ]
+    };
+
+    constructor(
+        private modalService: NgbModal,
+        private http: HttpClient,
+        private router: Router,
+        private authenticationService: AuthService
+    ) {
+        this.flagTable = false;
+        this.flaglineChart = false;
+      //Load scenarios
+      this.http.get<string[]>('https://api.alphahuntsman.com/benedetto/scenarios').subscribe((data_scenarions: string[]) => {
+        this.scenarioList = new Array<string>();
+        for(var t_stop of data_scenarions){
+            this.scenarioList.push(t_stop);
+        }
+        this.scenarioList = this.scenarioList.sort();
+        this.selectedScenario = this.scenarioList[0];
+        this.pullCountries();
+      });
     }
     
-//    modal_data_mean : Economic_Series_Timepoints[];
-//    modal_data_upper : Economic_Series_Timepoints[];
-//    modal_data_lower : Economic_Series_Timepoints[];
+    pullCountries(){
+        this.http.get<string[]>('https://api.alphahuntsman.com/benedetto/countries').subscribe((data_countries: string[]) => {
+            this.countryList = new Array<string>();
+            for(var t_stop of data_countries){
+                this.countryList.push(t_stop.replace("_"," "));
+            }
+            this.countryList = this.countryList.sort();
+            this.countryClassSelected = this.countryList[0];
+            this.pullStats();
+        });
+    }
+    
+    pullStats(){
+        this.http.get<BenedettoResults[]>('https://api.alphahuntsman.com/benedetto/stats?country=' + this.countryClassSelected + '&scenario=' + this.selectedScenario).subscribe((data_stats: BenedettoResults[]) => {
+            this.tableData = data_stats;
+            this.flagTable = true;
+        });
+    }
     
     //Modal details
     title: string;
-    GetDetails(content, t_variable, data_format) {
-        /*
-        this.modal_data_mean = null;
-        this.modal_data_upper = null;
-        this.modal_data_lower = null;
-        var format_qoq_ar = "QoQ AR";
-        this.http.get<Economic_Series_Timepoints[]>('https://api.alphahuntsman.com/atlas/series?country='+this.countrySelected+"&variable="+t_variable+"&format="+data_format+'&scenario='+this.selectedScenario)
-             .subscribe((data_details: Economic_Series_Timepoints[]) => {
-                this.modal_data_mean = data_details.filter(temp => temp.measure == "Mean");
-                this.modal_data_upper = data_details.filter(temp => temp.measure == "Upper");
-                this.modal_data_lower = data_details.filter(temp => temp.measure == "Lower");
-                
-                //Sort to plot
-                const lineplot_data_mean = [];
-                const lineplot_data_upper = [];
-                const lineplot_data_lower = [];
-                for(var t_inner of this.modal_data_mean){
-                    if(t_inner.format == format_qoq_ar){
-                        let temp_year = t_inner.time.split("Q")[0]
-                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
-                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_mean.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
-                    }else{
-                        let temp_unix = new Date(t_inner.time+"-01-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_mean.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
+    GetDetails(content, t_measure, t_category, t_sector) {
+        this.http.get<BenedettoSeriesModel[]>('https://api.alphahuntsman.com/benedetto/series?country=' + this.countryClassSelected 
+                                + '&scenario=' + this.selectedScenario + '&category=' + t_category + '&measure=' + t_measure + '&sector=' + t_sector)
+             .subscribe((data_details: BenedettoSeriesModel[]) => {
+                    this.flaglineChart = false;
+                    //Sort to plot
+                    const lineplot_data_mean = [];
+                    for(var t_idx = 0; t_idx < data_details[0].series_values.length; t_idx++){
+                        let temp_unix = new Date(data_details[0].series_index[t_idx]);
+                        let temp_unix_no = temp_unix.getTime();
+                        let temp_entry = Number(data_details[0].series_values[t_idx]);
+                        lineplot_data_mean.push([temp_unix_no, Math.round(temp_entry * 1000) / 1000])
                     }
-                };
-                //Upper values
-                for(var t_inner of this.modal_data_upper){
-                    if(t_inner.format == format_qoq_ar){
-                        let temp_year = t_inner.time.split("Q")[0]
-                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
-                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_upper.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
-                    }else{
-                        let temp_unix = new Date(t_inner.time+"-01-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_upper.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
-                    }
-                };
-                //Lower values
-                for(var t_inner of this.modal_data_lower){
-                    if(t_inner.format == format_qoq_ar){
-                        let temp_year = t_inner.time.split("Q")[0]
-                        let temp_month = 1+(Number(t_inner.time.split("Q")[1])-1)*3;
-                        let temp_unix = new Date(temp_year + "-"+temp_month+"-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_lower.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
-                    }else{
-                        let temp_unix = new Date(t_inner.time+"-01-01");
-                        let temp_unix_no = temp_unix.getTime()
-                        lineplot_data_lower.push([temp_unix_no, Math.round(t_inner.value * 1000) / 1000])
-                    }
-                };
-                this.lineChart = new StockChart(this.lineOptions);
-                this.lineOptions.series[0].data = lineplot_data_mean;
-                this.lineOptions.series[1].data = lineplot_data_lower;
-                this.lineOptions.series[2].data = lineplot_data_upper;
-                window.dispatchEvent(new Event('resize'));
-                //Final model activation
-                this.title = t_variable + " " + data_format;
-                this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
-                    }, (reason) => {     
-                });
+                    this.lineOptions.series[0].data = lineplot_data_mean;
+                    this.lineChart = new StockChart(this.lineOptions);
+                    this.flaglineChart = true;
+                    window.dispatchEvent(new Event('resize'));
+                    //Final model activation
+                    this.title = t_measure + " " + t_category + " " + t_sector;
+                    this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
+                        }, (reason) => {     
+                    });
              });
-        */
+    }
+    
+    ngOnInit() {
     }
 }

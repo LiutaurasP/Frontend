@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="content-header">Real Growth Nowcast</div>
+    <div class="content-header">Sectoral performance YoY</div>
     <p class="content-sub-header"></p>
   </div>
 </div>
@@ -9,113 +9,68 @@
 	<div class="col-sm-12">
 		<div class="card">
 			<div class="card-header">
+				<div class="row justify-content-between">
+					<div class="col-2">
+						<div ngbDropdown>
+							<h4 class="primary type-info">Country </h4>
+							<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ countryClassSelected }}</button>
+							<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+								<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countryClassSelectorDrop(stop_country)" >{{stop_country}}</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-2">
+						<div ngbDropdown>
+							<h4 class="danger type-info">Scenario </h4>
+							<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedScenario }}</button>
+							<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+								<button class="dropdown-item" *ngFor="let stop_scenario of scenarioList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="card-content">
-				<div class="card-body">
-					<div class="chart-info mb-3 ml-3">
-					</div>
-					<div id="line-area" *ngIf="countryList" class="height-650 lineArea">
-    					<div [chart]="mapChart"></div>
-					</div>
+				<div class="card-header">
+					Model version <span class="primary text-bold-500">0.01</span>.
 				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-sm-12">
-		<section id="hoverable-rows">
-			<div class="row text-left">
-				<div class="col-sm-12">
-					<div class="card">
-						<div class="card-header">
-							<div class="row justify-content-between">
-								<div class="col-4">
-									<div ngbDropdown>
-										<h4 class="primary type-info">Country or region </h4>
-										<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ countrySelected }}</button>
-										<div ngbDropdownMenu aria-labelledby="dropdownCountry">
-											<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)" >{{stop_country}}</button>
-										</div>
-									</div>
-								</div>
-								<div class="col-3">
-									<div ngbDropdown>
-										<h4 class="danger type-info">Scenario </h4>
-										<button class="btn btn-outline-danger mr-1" id="dropdownScenario" ngbDropdownToggle>{{ selectedScenario }}</button>
-										<div ngbDropdownMenu aria-labelledby="dropdownScenario">
-											<button class="dropdown-item" *ngFor="let stop_scenario of scenarionList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-content" *ngIf="currentCountryDetailsQoQ">
-							<div class="card-header">
-								Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.37</span> next refresh due at 
-								<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd' }}</span>.
-							</div>
-							<div class="card-body" *ngIf="currentCountryDetailsQoQ[0].series">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-12">
+							<div class="card-body" *ngIf="flagTable">
 								<table class="table table-sm">
 									<thead>
-										<tr *ngIf="currentCountryDetailsQoQ[0].series">
-											<th>{{currentCountryDetailsQoQ[0].series_format}}</th>
-											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm2}}</th>
-											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm1}}</th>
-											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm0}}</th>
-											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tp1}}</th>
-											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tp2}}</th>
+										<tr *ngIf="tableData[0].measure">
+											<th>Measure</th>
+											<th>Category</th>
+											<th>Sector</th>
+											<th>Month: {{tableData[0].stamp_tm2}}</th>
+											<th>{{tableData[0].stamp_tm1}}</th>
+											<th>{{tableData[0].stamp_tm0}}</th>
+											<th>{{tableData[0].stamp_tp1}}</th>
+											<th>{{tableData[0].stamp_tp2}}</th>
+											<th>{{tableData[0].stamp_tp3}}</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr *ngFor="let t_item_d of currentCountryDetailsQoQ">
-											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
-											<td>{{t_item_d.series[0].value_tm2}}</td>
-											<td>{{t_item_d.series[0].value_tm1}}</td>
-											<td>{{t_item_d.series[0].value_tm0}}</td>
-											<td>{{t_item_d.series[0].value_tp1}}</td>
-											<td>{{t_item_d.series[0].value_tp2}}</td>
+										<tr *ngFor="let t_item_d of tableData">
+											<td>{{t_item_d.measure}}</td>
+											<td>{{t_item_d.category}}</td>
+											<td><a (click)="GetDetails(content, t_item_d.measure, t_item_d.category, t_item_d.sector)" class="card-link primary">{{t_item_d.sector}}</a></td>
+											<td>{{t_item_d.value_tm2 | number:'1.2-2'}}</td>
+											<td>{{t_item_d.value_tm1 | number:'1.2-2'}}</td>
+											<td>{{t_item_d.value_tm0 | number:'1.2-2'}}</td>
+											<td>{{t_item_d.value_tp1 | number:'1.2-2'}}</td>
+											<td>{{t_item_d.value_tp2 | number:'1.2-2'}}</td>
+											<td>{{t_item_d.value_tp3 | number:'1.2-2'}}</td>
 										</tr>
 									</tbody>
 								</table>
-								<table class="table table-sm" *ngIf="currentCountryDetailsYoY[0].series">
-									<thead>
-										<tr *ngIf="currentCountryDetailsYoY[0].series">
-											<th>{{currentCountryDetailsYoY[0].series_format}}</th>
-											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm2}}</th>
-											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm1}}</th>
-											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm0}}</th>
-											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tp1}}</th>
-											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tp2}}</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr *ngFor="let t_item_d of currentCountryDetailsYoY">
-											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
-											<td>{{t_item_d.series[0].value_tm2}}</td>
-											<td>{{t_item_d.series[0].value_tm1}}</td>
-											<td>{{t_item_d.series[0].value_tm0}}</td>
-											<td>{{t_item_d.series[0].value_tp1}}</td>
-											<td>{{t_item_d.series[0].value_tp2}}</td>
-										</tr>
-									</tbody>
-								</table>
-								<div class="row">
-									<div class="col-5">
-										<div *ngIf="flag_factors" [chart]="mapKey"></div>
-									</div>
-									<div class="col-7">
-										<div *ngIf="flag_cycles" [chart]="cycleTracker"></div>
-									</div>
-								</div>
-
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			
 			<ng-template #content let-c="close" let-d="dismiss">
 				<div class="modal-header bg-primary">
 					<h4 class="modal-title white">{{title}}</h4>
@@ -124,145 +79,12 @@
 					</button>
 				</div>
 				<div class="modal-body" id="kbModal-body">
-					<div *ngIf="modal_data_mean" [chart]="lineChart"></div>
+					<div *ngIf="flaglineChart" [chart]="lineChart"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>
 				</div>
 			</ng-template>
-		</section>
-	</div>
-	<div class="col-sm-12" *ngIf="curvePlotFlag">
-		<div class="card">
-			<div class="card-header">
-			</div>
-			<div class="card-content">
-				<div class="card-header">
-					Sovereign curves. Model version <span class="primary text-bold-500">0.11</span>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-12">
-							<div id="SovCurvePlot" *ngIf="curvePlotFlag" class="SovCurvePlot">
-		    					<div [chart]="curvePlot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="row justify-content-md-center">
-						<div class="col-1">
-						</div>
-						<div class="col-3">
-							<div ngbDropdown>
-								<h4 class="success type-info">Future Point </h4>
-								<button class="btn btn-outline-success mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedTimepoint }}</button>
-								<div ngbDropdownMenu aria-labelledby="dropdownScenario">
-									<button class="dropdown-item" *ngFor="let stop_timepoint of timepointList" (click)="timepointSelectorDrop(stop_timepoint)" >{{stop_timepoint}}</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-sm-12" *ngIf="flag_fx">
-		<div class="card">
-			<div class="card-header">
-			</div>
-			<div class="card-content">
-				<div class="card-header">
-					Exchange rate dynamics. Model version <span class="primary text-bold-500">0.10</span>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-4">
-							<div *ngIf="flag_fxPLOT" [chart]="lineChartFXPlot"></div>
-						</div>
-						<div class="col-4">
-							<div *ngIf="flag_NEERPLOT" [chart]="lineChartNEERPlot"></div>
-						</div>
-						<div class="col-4">
-							<div *ngIf="flag_REERPLOT" [chart]="lineChartREERPlot"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-sm-12" *ngIf="flag_VaR">
-		<div class="card">
-			<div class="card-header">
-				
-			</div>
-			<div class="card-content">
-				<div class="card-header">
-					Extreme outcomes. Model version <span class="primary text-bold-500">0.01</span>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-6">
-							<div *ngIf="flag_VaRGrowthPLOT" [chart]="lineChartVaRGrowthDrivers"></div>
-						</div>
-						<div class="col-6">
-							<div *ngIf="flag_VaRGrowthPLOT" [chart]="lineChartVaRGrowthQuantile"></div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<div *ngIf="flag_VaRInflationPLOT" [chart]="lineChartVaRInflationDrivers"></div>
-						</div>
-						<div class="col-6">
-							<div *ngIf="flag_VaRInflationPLOT" [chart]="lineChartVaRInflationQuantile"></div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<div *ngIf="flag_VaREquitiesPLOT" [chart]="lineChartVaREquitiesDrivers"></div>
-						</div>
-						<div class="col-6">
-							<div *ngIf="flag_VaREquitiesPLOT" [chart]="lineChartVaREquitiesQuantile"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-sm-12" *ngIf="flagGrowthSupplyDemand">
-		<div class="card">
-			<div class="card-header">
-				
-			</div>
-			<div class="card-content">
-				<div class="card-header">
-					Growth supply demand shock decomposition. Model version <span class="primary text-bold-500">0.01</span>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-12">
-							<div *ngIf="flagGrowthSupplyDemand" [chart]="lineChartGrowthSupplyDemandPlot"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-sm-12" *ngIf="flagGrowthSupplyTriDemand">
-		<div class="card">
-			<div class="card-header">
-				
-			</div>
-			<div class="card-content">
-				<div class="card-header">
-					Growth supply demand and long-term shocks decomposition. Model version <span class="primary text-bold-500">0.01</span>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-12">
-							<div *ngIf="flagGrowthSupplyTriDemand" [chart]="lineChartGrowthSupplyDemandTriPlot"></div>
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>

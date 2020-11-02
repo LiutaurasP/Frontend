@@ -32,6 +32,10 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../chronos/chronos.module').then(m => m.ChronosModule)
   },
   {
+    path: 'benedetto',
+    loadChildren: () => import('../../benedetto/benedetto.module').then(m => m.BenedettoModule)
+  },
+  {
     path: 'pages',
     loadChildren: () => import('../../pages/full-pages/full-pages.module').then(m => m.FullPagesModule)
   }
