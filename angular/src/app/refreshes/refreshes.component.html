@@ -1,0 +1,737 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">Key changes from new information</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card">
+			<div class="card-header">
+				<div class="row justify-content-between">
+					<div class="col-6">
+						<div ngbDropdown>
+							<h4 class="primary type-info">Country </h4>
+							<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ countryClassSelected }}</button>
+							<div ngbDropdownMenu aria-labelledby="dropdownCountry">
+								<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countryClassSelectorDrop(stop_country)" >{{stop_country}}</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-content">
+				<div class="card-header">
+					Model version <span class="primary text-bold-500">0.01</span>. Data changes for the week of <span class="primary text-bold-500">{{ this.lastRefreshDate  | date:'yyyy-MM-dd' }}</span>.
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-12" *ngIf="flagTableInputs">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputs">
+											<th>Key releases</th>
+											<th>Latest</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputs">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6" *ngIf="flagTableInputsGrowCons">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsGrowCons">
+											<th>Consumer growth</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsGrowCons">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-6" *ngIf="flagTableInputsInfCons">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsInfCons">
+											<th>Consumer inflation</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsInfCons">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6"  *ngIf="flagTableInputsGrowMfg">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsGrowMfg">
+											<th>Manufacturing growth</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsGrowMfg">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-6" *ngIf="flagTableInputsInfMfg">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsInfMfg">
+											<th>Manufacturing inflation</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsInfMfg">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6" *ngIf="flagTableInputsGrowTrade">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsGrowTrade">
+											<th>Trade growth</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsGrowTrade">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-6" *ngIf="flagTableInputsInfTrade">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableDataInputsInfTrade">
+											<th>Trade inflation</th>
+											<th>Latest</th>
+											<th>Change</th>
+											<th>Impact</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableDataInputsInfTrade">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+											<td>({{t_item_d.impact}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body" *ngIf="flagTableFactorsOutlookBase">
+					<div class="row">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableFactorsOutlookBase">
+											<th>Baseline outlook</th>
+											<th>Consumer growth</th>
+											<th>Change</th>
+											<th>Manufacturing growth</th>
+											<th>Change</th>
+											<th>Trade growth</th>
+											<th>Change</th>
+											<th>Consumer inf.</th>
+											<th>Change</th>
+											<th>Manufacturing inf.</th>
+											<th>Change</th>
+											<th>Trade inf.</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableFactorsOutlookBase">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.g_cons_latest}}</td>
+											<td>({{t_item_d.g_cons_change}})</td>
+											<td>{{t_item_d.g_mfg_latest}}</td>
+											<td>({{t_item_d.g_mfg_change}})</td>
+											<td>{{t_item_d.g_trade_latest}}</td>
+											<td>({{t_item_d.g_trade_change}})</td>
+											<td>{{t_item_d.i_cons_latest}}</td>
+											<td>({{t_item_d.i_cons_change}})</td>
+											<td>{{t_item_d.i_mfg_latest}}</td>
+											<td>({{t_item_d.i_mfg_change}})</td>
+											<td>{{t_item_d.i_trade_latest}}</td>
+											<td>({{t_item_d.i_trade_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableFactorsOutlookCons">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableFactorsOutlookCons">
+											<th>Consensus outlook</th>
+											<th>Consumer growth</th>
+											<th>Change</th>
+											<th>Manufacturing growth</th>
+											<th>Change</th>
+											<th>Trade growth</th>
+											<th>Change</th>
+											<th>Consumer inf.</th>
+											<th>Change</th>
+											<th>Manufacturing inf.</th>
+											<th>Change</th>
+											<th>Trade inf.</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableFactorsOutlookCons">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.g_cons_latest}}</td>
+											<td>({{t_item_d.g_cons_change}})</td>
+											<td>{{t_item_d.g_mfg_latest}}</td>
+											<td>({{t_item_d.g_mfg_change}})</td>
+											<td>{{t_item_d.g_trade_latest}}</td>
+											<td>({{t_item_d.g_trade_change}})</td>
+											<td>{{t_item_d.i_cons_latest}}</td>
+											<td>({{t_item_d.i_cons_change}})</td>
+											<td>{{t_item_d.i_mfg_latest}}</td>
+											<td>({{t_item_d.i_mfg_change}})</td>
+											<td>{{t_item_d.i_trade_latest}}</td>
+											<td>({{t_item_d.i_trade_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableKeyOutlookBase">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableKeyOutlookBase">
+											<th>Baseline outlook</th>
+											<th>Real growth</th>
+											<th>Change</th>
+											<th>IP</th>
+											<th>Change</th>
+											<th>Consumer expenditure</th>
+											<th>Change</th>
+											<th>Deflator</th>
+											<th>Change</th>
+											<th>PPI</th>
+											<th>Change</th>
+											<th>CPI</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableKeyOutlookBase">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.rgdp_latest}}</td>
+											<td>({{t_item_d.rgdp_change}})</td>
+											<td>{{t_item_d.ip_latest}}</td>
+											<td>({{t_item_d.ip_change}})</td>
+											<td>{{t_item_d.consExp_latest}}</td>
+											<td>({{t_item_d.consExp_change}})</td>
+											<td>{{t_item_d.deflator_latest}}</td>
+											<td>({{t_item_d.deflator_change}})</td>
+											<td>{{t_item_d.ppi_latest}}</td>
+											<td>({{t_item_d.ppi_change}})</td>
+											<td>{{t_item_d.cpi_latest}}</td>
+											<td>({{t_item_d.cpi_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableKeyOutlookCons">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableKeyOutlookCons">
+											<th>Consensus outlook</th>
+											<th>Real growth</th>
+											<th>Change</th>
+											<th>IP</th>
+											<th>Change</th>
+											<th>Consumer expenditure</th>
+											<th>Change</th>
+											<th>Deflator</th>
+											<th>Change</th>
+											<th>PPI</th>
+											<th>Change</th>
+											<th>CPI</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableKeyOutlookCons">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.rgdp_latest}}</td>
+											<td>({{t_item_d.rgdp_change}})</td>
+											<td>{{t_item_d.ip_latest}}</td>
+											<td>({{t_item_d.ip_change}})</td>
+											<td>{{t_item_d.consExp_latest}}</td>
+											<td>({{t_item_d.consExp_change}})</td>
+											<td>{{t_item_d.deflator_latest}}</td>
+											<td>({{t_item_d.deflator_change}})</td>
+											<td>{{t_item_d.ppi_latest}}</td>
+											<td>({{t_item_d.ppi_change}})</td>
+											<td>{{t_item_d.cpi_latest}}</td>
+											<td>({{t_item_d.cpi_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableFXData">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableFXData">
+											<th>FX outlook</th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableFXData">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row" *ngIf="flagTableTermData">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableTermData">
+											<th>Term structure outlook</th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableTermData">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row"  *ngIf="flagTableTailGrowthData">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableTailGrowthData">
+											<th>Lower growth tail risks</th>
+											<th>Latest</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableTailGrowthData">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row"  *ngIf="flagTableTailCPIData">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableTailCPIData">
+											<th>Upper CPI tail risks</th>
+											<th>Latest</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableTailCPIData">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row" *ngIf="flagTableTailEquityData">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableTailEquityData">
+											<th>Lower equity return tail risks</th>
+											<th>Latest</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableTailEquityData">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.latest}}</td>
+											<td>({{t_item_d.change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableIncomeData1">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData1">
+											<th>{{ tableIncomeName1 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData1">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableIncomeData2">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData2">
+											<th>{{ tableIncomeName2 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData2">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>				
+					<div class="row" *ngIf="flagTableIncomeData3">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData3">
+											<th>{{ tableIncomeName3 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData3">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row" *ngIf="flagTableIncomeData4">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData4">
+											<th>{{ tableIncomeName4 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData4">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableIncomeData5">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData5">
+											<th>{{ tableIncomeName5 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData5">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row" *ngIf="flagTableIncomeData6">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData6">
+											<th>{{ tableIncomeName6 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData6">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>	
+					<div class="row" *ngIf="flagTableIncomeData7">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData7">
+											<th>{{ tableIncomeName7 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData7">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row" *ngIf="flagTableIncomeData8">
+						<div class="col-12">
+							<div class="card-header">
+							</div>
+							<div class="card-body">
+								<table class="table table-sm">
+									<thead>
+										<tr *ngIf="tableIncomeData8">
+											<th>{{ tableIncomeName8 }} </th>
+											<th>Baseline</th>
+											<th>Change</th>
+											<th>Consensus</th>
+											<th>Change</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let t_item_d of tableIncomeData8">
+											<td>{{t_item_d.variable}}</td>
+											<td>{{t_item_d.base_latest}}</td>
+											<td>({{t_item_d.base_change}})</td>
+											<td>{{t_item_d.cons_latest}}</td>
+											<td>({{t_item_d.cons_change}})</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
