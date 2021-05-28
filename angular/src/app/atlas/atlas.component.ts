@@ -164,6 +164,16 @@ export interface Growth_SupplyDemandTri{
     run_date: string;
 };
 
+//
+//Income table
+export interface Income_table_data{
+    data_columns: string[];
+    data_last_q: string[];
+    data_current: string[];
+    data_baseline: string[];
+    data_consensus: string[];
+};
+
 declare var require: any;
 const worldMap = require('@highcharts/map-collection/custom/world.geo.json');
 
@@ -829,6 +839,13 @@ export class AtlasComponent {
         ]
     };
     //
+    //Income table data
+    //
+    flag_income_table = null
+    data_income_table = null
+    selectedIndustryGroup = 'Overall';
+    selectedIndustrySector = 'Total';
+    //
     constructor(
         private http: HttpClient, 
         private modalService: NgbModal,
@@ -838,6 +855,8 @@ export class AtlasComponent {
     }
 
     ngOnInit(){
+        this.selectedIndustryGroup = 'Overall';
+        this.selectedIndustrySector = 'Total';
         this.curvePlotFlag = false;
         this.flag_fx = false;
         this.flag_fxPLOT = false;
@@ -845,6 +864,7 @@ export class AtlasComponent {
         this.flag_REERPLOT = false;
         this.flagGrowthSupplyDemand = false;
         this.flagGrowthSupplyTriDemand = false;
+        this.flag_income_table = false;
 
         //
         this.selectedScenario = "Baseline";
@@ -862,7 +882,6 @@ export class AtlasComponent {
                 this.router.navigate(['/pages/maintenance']);
             }
             );
-        
         //Load world map data
         this.http.get<World_Map_Entry[]>('https://api.alphahuntsman.com/atlas/world?scenario='+this.selectedScenario)
             .subscribe((data_details: World_Map_Entry[]) => {
@@ -888,6 +907,8 @@ export class AtlasComponent {
                 //Pull data
                 this.curvePlotFlag = false;
                 this.pullingCurveData();
+                //
+                this.industrySelectorDrop('Overall');
             });
     }
     
@@ -897,10 +918,48 @@ export class AtlasComponent {
     scenarioSelectorDrop(newSortOrder: string){
         this.selectedScenario = newSortOrder;
         this.countrySelectorDrop(this.countrySelected);
-    }    
+    }  
     
+    selectedIndustryGroupList: string[];
+    industrySelectorDrop(newSortOrder: string){
+        this.selectedIndustryGroup = newSortOrder;
+        //Get Income sectors
+        this.http.get<string[]>('https://api.alphahuntsman.com/atlas/income/industries?country='+this.countrySelectedCode.toLowerCase()+'&group='+this.selectedIndustryGroup).subscribe((data_scenarions: string[]) => {
+                this.selectedIndustrySectorList = new Array<string>();
+                for(var t_stop of data_scenarions){
+                    this.selectedIndustrySectorList.push(t_stop);
+                }
+                if(this.selectedIndustrySectorList.includes('Total')){ 
+                    this.selectedIndustrySector = 'Total'
+                }else{
+                    this.selectedIndustrySector = this.selectedIndustrySectorList[0];
+                }
+                this.sectorSelectorDrop(this.selectedIndustrySector);
+            }
+        );
+        //
+    } 
+    //
+    selectedIndustrySectorList: string[];
+    sectorSelectorDrop(newSortOrder: string){
+        //Setting income data
+        this.flag_income_table = false;
+        this.http.get<Income_table_data[]>('https://api.alphahuntsman.com/atlas/income/table?country='+this.countrySelectedCode+'&group='+this.selectedIndustryGroup+'&industry='+this.selectedIndustrySector)
+             .subscribe((data_details: Income_table_data[]) => {
+                 this.data_income_table = data_details[0]
+                 if(this.data_income_table != null){
+                     this.flag_income_table = true;
+                 }else{
+                     this.data_income_table = null
+                 }
+             }
+        );
+        this.selectedIndustrySector = newSortOrder;
+    } 
+    //
     countryList: string[];
     countrySelected : string = "World"
+    countrySelectedCode : string = '';
     //Dropdown selector
     countrySelectorDrop(newSortOrder: string){ 
         this.currentCountryDetailsQoQ = null;
@@ -979,6 +1038,7 @@ export class AtlasComponent {
         //Setting details
         let country_name = this.worldMapData.filter(stop => stop.country == newSortOrder)[0].country_code;
         this.flag_factors = false;
+        this.countrySelectedCode = country_name.toLowerCase();
         this.http.get<Economic_Polygon[]>('https://api.alphahuntsman.com/atlas/countrystr?country='+country_name.toUpperCase()+'&scenario='+this.selectedScenario)
              .subscribe((data_details: Economic_Polygon[]) => {
                 const temp_horizon_list = ['Before','Now','Future'];
@@ -1009,7 +1069,15 @@ export class AtlasComponent {
                 this.cycleTrackerOptions.series[0].data = temp_data_values;
                 this.cycleTracker = new Chart(this.cycleTrackerOptions);
              });
-        //Setting indice data
+        //Get Income industries
+        this.http.get<string[]>('https://api.alphahuntsman.com/atlas/income/groups?country='+country_name.toLowerCase()).subscribe((data_scenarions: string[]) => {
+                this.selectedIndustryGroupList = new Array<string>();
+                for(var t_stop of data_scenarions){
+                    this.selectedIndustryGroupList.push(t_stop);
+                }
+                this.industrySelectorDrop('Overall');
+            }
+        );
     }
 
     
@@ -1089,6 +1157,7 @@ export class AtlasComponent {
     }
 
     async pullinFXData(){
+        /*
         //Get tenors
         var countrySelectedCurve = this.countrySelected;
         if (countrySelectedCurve == "United Kingdom"){
@@ -1190,6 +1259,7 @@ export class AtlasComponent {
             });
 
         });
+        */
     }
     
     async pullingVaRData(){
@@ -1201,6 +1271,7 @@ export class AtlasComponent {
             countrySelectedCurve = "US";
         }
         //VaR
+        /*
         this.http.get<VaR_Data>('https://api.alphahuntsman.com/valueatrisk/VaR?country='+countrySelectedCurve)
          .subscribe((data_VaR: VaR_Data) => {
             //Get timepoints
@@ -1719,9 +1790,11 @@ export class AtlasComponent {
             }
         }
         );
+        */
     }
     
     async pullingGrowthSupplyDemandTri(){
+        /*
         //Load scenarions
         var countrySelectedCurve = this.countrySelected;
         if (countrySelectedCurve == "United Kingdom"){
@@ -1753,6 +1826,7 @@ export class AtlasComponent {
                     //No such country
                 }
         });
+        */
     }
     
     
@@ -1764,6 +1838,7 @@ export class AtlasComponent {
         }else if (countrySelectedCurve == "United States"){
             countrySelectedCurve = "US";
         }
+        /*
         this.http.get<Growth_SupplyDemand>('https://api.alphahuntsman.com/growthdecomposed/supplydemand?country='+countrySelectedCurve).subscribe(
             (data_pulled : Growth_SupplyDemand) => {
                 if(data_pulled){
@@ -1788,9 +1863,11 @@ export class AtlasComponent {
                     //No such country
                 }
         });
+        */
     }
     
     async pullingCurveData(){
+        /*
         //Get tenors
         var countrySelectedCurve = this.countrySelected;
         if (countrySelectedCurve == "United Kingdom"){
@@ -1832,10 +1909,12 @@ export class AtlasComponent {
                 }
             });
         });
+        */
     }
     
     //
     plottingSelectedCurve(){
+        /*
         var curve_data_now = this.pulledCurvedData.filter(stop => stop.time == this.currentTimepoint);
         var curve_data_next = this.pulledCurvedData.filter(stop => stop.time == this.selectedTimepoint);
         //Sort by tenors
@@ -1858,6 +1937,7 @@ export class AtlasComponent {
         this.curvePlot = new Chart(this.curvePlotOptions);
         this.curvePlotFlag = true;
         window.dispatchEvent(new Event('resize'));
+        */
     }
     //modalService
     //content

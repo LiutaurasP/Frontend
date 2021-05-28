@@ -165,6 +165,7 @@
 			</div>
 		</div>
 	</div>
+	<!--
 	<div class="col-sm-12" *ngIf="flag_fx">
 		<div class="card">
 			<div class="card-header">
@@ -189,6 +190,7 @@
 			</div>
 		</div>
 	</div>
+	-->
 	<div class="col-sm-12" *ngIf="flag_VaR">
 		<div class="card">
 			<div class="card-header">
@@ -265,4 +267,146 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-sm-12" *ngIf="flag_income_table">
+		<div class="card">
+			<div class="card-header">
+				<div class="row justify-content-between">
+					<div class="col-4">
+						<div ngbDropdown>
+							<h4 class="primary type-info">Economy segment</h4>
+							<button class="btn btn-outline-primary mr-1" id="dropdownIndustry" ngbDropdownToggle>{{ selectedIndustryGroup }}</button>
+							<div ngbDropdownMenu aria-labelledby="dropdownIndustry">
+								<button class="dropdown-item" *ngFor="let stop_industry of selectedIndustryGroupList" (click)="industrySelectorDrop(stop_industry)" >{{stop_industry}}</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div ngbDropdown>
+							<h4 class="danger type-info">Industry </h4>
+							<button class="btn btn-outline-danger mr-1" id="dropdownScenario" ngbDropdownToggle>{{ selectedIndustrySector }}</button>
+							<div ngbDropdownMenu aria-labelledby="dropdownScenario">
+								<button class="dropdown-item" *ngFor="let stop_sector of selectedIndustrySectorList" (click)="sectorSelectorDrop(stop_sector)" >{{stop_sector}}</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-content">
+				<div class="card-header">
+				</div>
+				<div class="card-body" *ngIf="data_income_table">
+					<div class="row">
+						<div class="col-12">
+							<table class="table table-sm">
+								<thead>
+									<tr>
+										<th>Measures QoQ or index</th>
+										<th>{{data_income_table.data_columns[0]}}</th>
+										<th>{{data_income_table.data_columns[1]}}</th>
+										<th>{{data_income_table.data_columns[2]}}</th>
+										<th>{{data_income_table.data_columns[3]}}</th>
+										<th>{{data_income_table.data_columns[4]}}</th>
+										<th>{{data_income_table.data_columns[5]}}</th>
+										<th>{{data_income_table.data_columns[6]}}</th>
+										<th>{{data_income_table.data_columns[7]}}</th>
+										<th>{{data_income_table.data_columns[8]}}</th>
+										<th>{{data_income_table.data_columns[9]}}</th>
+										<th>{{data_income_table.data_columns[10]}}</th>
+										<th>{{data_income_table.data_columns[11]}}</th>
+										<th>{{data_income_table.data_columns[12]}}</th>
+										<th>{{data_income_table.data_columns[13]}}</th>
+										<th>{{data_income_table.data_columns[14]}}</th>
+										<th>{{data_income_table.data_columns[15]}}</th>
+										<th>{{data_income_table.data_columns[16]}}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th scope="row"><a>Previous Q</a></th>
+										<td>{{data_income_table.data_last_q[0]}}</td>
+										<td>{{data_income_table.data_last_q[1]}}</td>
+										<td>{{data_income_table.data_last_q[2]}}</td>
+										<td>{{data_income_table.data_last_q[3]}}</td>
+										<td>{{data_income_table.data_last_q[4]}}</td>
+										<td>{{data_income_table.data_last_q[5]}}</td>
+										<td>{{data_income_table.data_last_q[6]}}</td>
+										<td>{{data_income_table.data_last_q[7]}}</td>
+										<td>{{data_income_table.data_last_q[8]}}</td>
+										<td>{{data_income_table.data_last_q[9]}}</td>
+										<td>{{data_income_table.data_last_q[10]}}</td>
+										<td>{{data_income_table.data_last_q[11]}}</td>
+										<td>{{data_income_table.data_last_q[12]}}</td>
+										<td>{{data_income_table.data_last_q[13]}}</td>
+										<td>{{data_income_table.data_last_q[14]}}</td>
+										<td>{{data_income_table.data_last_q[15]}}</td>
+										<td>{{data_income_table.data_last_q[16]}}</td>
+									</tr>
+									<tr>
+										<th scope="row"><a>Current</a></th>
+										<td>{{data_income_table.data_current[0]}}</td>
+										<td>{{data_income_table.data_current[1]}}</td>
+										<td>{{data_income_table.data_current[2]}}</td>
+										<td>{{data_income_table.data_current[3]}}</td>
+										<td>{{data_income_table.data_current[4]}}</td>
+										<td>{{data_income_table.data_current[5]}}</td>
+										<td>{{data_income_table.data_current[6]}}</td>
+										<td>{{data_income_table.data_current[7]}}</td>
+										<td>{{data_income_table.data_current[8]}}</td>
+										<td>{{data_income_table.data_current[9]}}</td>
+										<td>{{data_income_table.data_current[10]}}</td>
+										<td>{{data_income_table.data_current[11]}}</td>
+										<td>{{data_income_table.data_current[12]}}</td>
+										<td>{{data_income_table.data_current[13]}}</td>
+										<td>{{data_income_table.data_current[14]}}</td>
+										<td>{{data_income_table.data_current[15]}}</td>
+										<td>{{data_income_table.data_current[16]}}</td>
+									</tr>
+									<tr>
+										<th scope="row"><a>Next Q Baseline</a></th>
+										<td>{{data_income_table.data_baseline[0]}}</td>
+										<td>{{data_income_table.data_baseline[1]}}</td>
+										<td>{{data_income_table.data_baseline[2]}}</td>
+										<td>{{data_income_table.data_baseline[3]}}</td>
+										<td>{{data_income_table.data_baseline[4]}}</td>
+										<td>{{data_income_table.data_baseline[5]}}</td>
+										<td>{{data_income_table.data_baseline[6]}}</td>
+										<td>{{data_income_table.data_baseline[7]}}</td>
+										<td>{{data_income_table.data_baseline[8]}}</td>
+										<td>{{data_income_table.data_baseline[9]}}</td>
+										<td>{{data_income_table.data_baseline[10]}}</td>
+										<td>{{data_income_table.data_baseline[11]}}</td>
+										<td>{{data_income_table.data_baseline[12]}}</td>
+										<td>{{data_income_table.data_baseline[13]}}</td>
+										<td>{{data_income_table.data_baseline[14]}}</td>
+										<td>{{data_income_table.data_baseline[15]}}</td>
+										<td>{{data_income_table.data_baseline[16]}}</td>
+									</tr>
+									<tr>
+										<th scope="row"><a>Next Q Consensus</a></th>
+										<td>{{data_income_table.data_consensus[0]}}</td>
+										<td>{{data_income_table.data_consensus[1]}}</td>
+										<td>{{data_income_table.data_consensus[2]}}</td>
+										<td>{{data_income_table.data_consensus[3]}}</td>
+										<td>{{data_income_table.data_consensus[4]}}</td>
+										<td>{{data_income_table.data_consensus[5]}}</td>
+										<td>{{data_income_table.data_consensus[6]}}</td>
+										<td>{{data_income_table.data_consensus[7]}}</td>
+										<td>{{data_income_table.data_consensus[8]}}</td>
+										<td>{{data_income_table.data_consensus[9]}}</td>
+										<td>{{data_income_table.data_consensus[10]}}</td>
+										<td>{{data_income_table.data_consensus[11]}}</td>
+										<td>{{data_income_table.data_consensus[12]}}</td>
+										<td>{{data_income_table.data_consensus[13]}}</td>
+										<td>{{data_income_table.data_consensus[14]}}</td>
+										<td>{{data_income_table.data_consensus[15]}}</td>
+										<td>{{data_income_table.data_consensus[16]}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
 </div>
