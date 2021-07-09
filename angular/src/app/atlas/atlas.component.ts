@@ -9,6 +9,7 @@ import 'rxjs/add/operator/map'
 import { MapChart } from 'angular-highcharts';
 import { Chart } from 'angular-highcharts';
 import { StockChart } from 'angular-highcharts';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface World_Map_Entry{
     country: string;
@@ -846,11 +847,11 @@ export class AtlasComponent {
     selectedIndustryGroup = 'Overall';
     selectedIndustrySector = 'Total';
     //
-    constructor(
-        private http: HttpClient, 
-        private modalService: NgbModal,
-        private router: Router
-        ) { 
+    constructor(private http: HttpClient, 
+                private modalService: NgbModal,
+                private router: Router,
+                private readonly translate: TranslateService) {
+        translate.setDefaultLang('en');
         this.curvePlotFlag = false;
     }
 
@@ -1149,7 +1150,11 @@ export class AtlasComponent {
                 this.lineOptions.series[2].data = lineplot_data_upper;
                 window.dispatchEvent(new Event('resize'));
                 //Final model activation
-                this.title = t_variable + " " + data_format;
+                let series_name: string;
+                this.translate.get('ATLAS.series_names.' + t_variable).subscribe(result => series_name = result);
+                this.translate.get('ATLAS.' + data_format).subscribe(result => {
+                    this.title = `${series_name} ${result}`;
+                });
                 this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
                     }, (reason) => {     
                 });

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="content-header">Real Growth Nowcast</div>
+    <div class="content-header">{{ 'ATLAS.header' | translate}}</div>
     <p class="content-sub-header"></p>
   </div>
 </div>
@@ -33,19 +33,19 @@
 							<div class="row justify-content-between">
 								<div class="col-4">
 									<div ngbDropdown>
-										<h4 class="primary type-info">Country or region </h4>
-										<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ countrySelected }}</button>
+										<h4 class="primary type-info">{{ 'ATLAS.table_country_select' | translate }}</h4>
+										<button class="btn btn-outline-primary mr-1" id="dropdownCountry" ngbDropdownToggle>{{ ('COUNTRIES.' + countrySelected) | translate }}</button>
 										<div ngbDropdownMenu aria-labelledby="dropdownCountry">
-											<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)" >{{stop_country}}</button>
+											<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countrySelectorDrop(stop_country)">{{ ('COUNTRIES.' + stop_country) | translate }}</button>
 										</div>
 									</div>
 								</div>
 								<div class="col-3">
 									<div ngbDropdown>
-										<h4 class="danger type-info">Scenario </h4>
-										<button class="btn btn-outline-danger mr-1" id="dropdownScenario" ngbDropdownToggle>{{ selectedScenario }}</button>
+										<h4 class="danger type-info">{{ 'ATLAS.table_scenario_select' | translate }}</h4>
+										<button class="btn btn-outline-danger mr-1" id="dropdownScenario" ngbDropdownToggle>{{ ('ATLAS.' + selectedScenario) | translate }}</button>
 										<div ngbDropdownMenu aria-labelledby="dropdownScenario">
-											<button class="dropdown-item" *ngFor="let stop_scenario of scenarionList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+											<button class="dropdown-item" *ngFor="let stop_scenario of scenarionList" (click)="scenarioSelectorDrop(stop_scenario)">{{ ('ATLAS.' + stop_scenario) | translate }}</button>
 										</div>
 									</div>
 								</div>
@@ -53,14 +53,18 @@
 						</div>
 						<div class="card-content" *ngIf="currentCountryDetailsQoQ">
 							<div class="card-header">
-								Data refreshed at <span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span> model version <span class="primary text-bold-500">0.37</span> next refresh due at 
+								{{ 'ATLAS.table_data_refreshed' | translate }}
+								<span class="primary text-bold-500">{{ refreshDate |  date:'yyyy-MM-dd HH:mm' }}</span>
+								{{ 'ATLAS.table_model_version' | translate }}
+								<span class="primary text-bold-500">0.37</span>
+								{{ 'ATLAS.table_next_refresh' | translate }}
 								<span class="primary text-bold-500">{{ refreshDate_next |  date:'yyyy-MM-dd' }}</span>.
 							</div>
 							<div class="card-body" *ngIf="currentCountryDetailsQoQ[0].series">
 								<table class="table table-sm">
 									<thead>
 										<tr *ngIf="currentCountryDetailsQoQ[0].series">
-											<th>{{currentCountryDetailsQoQ[0].series_format}}</th>
+											<th>{{('ATLAS.' + currentCountryDetailsQoQ[0].series_format) | translate}}</th>
 											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm2}}</th>
 											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm1}}</th>
 											<th>{{currentCountryDetailsQoQ[0].series[0].stamp_tm0}}</th>
@@ -70,7 +74,7 @@
 									</thead>
 									<tbody>
 										<tr *ngFor="let t_item_d of currentCountryDetailsQoQ">
-											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
+											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{('ATLAS.series_names.' + t_item_d.series_name) | translate}}</a></th>
 											<td>{{t_item_d.series[0].value_tm2}}</td>
 											<td>{{t_item_d.series[0].value_tm1}}</td>
 											<td>{{t_item_d.series[0].value_tm0}}</td>
@@ -82,7 +86,7 @@
 								<table class="table table-sm" *ngIf="currentCountryDetailsYoY[0].series">
 									<thead>
 										<tr *ngIf="currentCountryDetailsYoY[0].series">
-											<th>{{currentCountryDetailsYoY[0].series_format}}</th>
+											<th>{{('ATLAS.' + currentCountryDetailsYoY[0].series_format) | translate}}</th>
 											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm2}}</th>
 											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm1}}</th>
 											<th>{{currentCountryDetailsYoY[0].series[0].stamp_tm0}}</th>
@@ -92,7 +96,7 @@
 									</thead>
 									<tbody>
 										<tr *ngFor="let t_item_d of currentCountryDetailsYoY">
-											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{t_item_d.series_name}}</a></th>
+											<th scope="row"><a (click)="GetDetails(content, t_item_d.series_name, t_item_d.series_format)" class="card-link primary">{{('ATLAS.series_names.' + t_item_d.series_name) | translate}}</a></th>
 											<td>{{t_item_d.series[0].value_tm2}}</td>
 											<td>{{t_item_d.series[0].value_tm1}}</td>
 											<td>{{t_item_d.series[0].value_tm0}}</td>
@@ -127,7 +131,7 @@
 					<div *ngIf="modal_data_mean" [chart]="lineChart"></div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>
+					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">{{ 'ATLAS.close' | translate }}</button>
 				</div>
 			</ng-template>
 		</section>
@@ -137,8 +141,8 @@
 			<div class="card-header">
 			</div>
 			<div class="card-content">
-				<div class="card-header">
-					Sovereign curves. Model version <span class="primary text-bold-500">0.11</span>
+				<div class="card-header" i18n="sovereign curves">
+					{{ 'ATLAS.sovereign_curves' | translate }}<span class="primary text-bold-500">0.11</span>
 				</div>
 				<div class="card-body">
 					<div class="row">
@@ -153,7 +157,7 @@
 						</div>
 						<div class="col-3">
 							<div ngbDropdown>
-								<h4 class="success type-info">Future Point </h4>
+								<h4 class="success type-info">{{ 'ATLAS.future_point' | translate }}</h4>
 								<button class="btn btn-outline-success mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedTimepoint }}</button>
 								<div ngbDropdownMenu aria-labelledby="dropdownScenario">
 									<button class="dropdown-item" *ngFor="let stop_timepoint of timepointList" (click)="timepointSelectorDrop(stop_timepoint)" >{{stop_timepoint}}</button>
@@ -198,7 +202,7 @@
 			</div>
 			<div class="card-content">
 				<div class="card-header">
-					Extreme outcomes. Model version <span class="primary text-bold-500">0.01</span>
+					{{ 'ATLAS.extreme_outcomes_text' | translate}}<span class="primary text-bold-500">0.01</span>
 				</div>
 				<div class="card-body">
 					<div class="row">
@@ -236,7 +240,7 @@
 			</div>
 			<div class="card-content">
 				<div class="card-header">
-					Growth supply demand shock decomposition. Model version <span class="primary text-bold-500">0.01</span>
+					{{ 'ATLAS.growth_supply_text' | translate}}<span class="primary text-bold-500">0.01</span>
 				</div>
 				<div class="card-body">
 					<div class="row">
@@ -255,7 +259,7 @@
 			</div>
 			<div class="card-content">
 				<div class="card-header">
-					Growth supply demand and long-term shocks decomposition. Model version <span class="primary text-bold-500">0.01</span>
+					{{ 'ATLAS.growth_supply_demand_text' | translate }}<span class="primary text-bold-500">0.01</span>
 				</div>
 				<div class="card-body">
 					<div class="row">
@@ -273,19 +277,19 @@
 				<div class="row justify-content-between">
 					<div class="col-4">
 						<div ngbDropdown>
-							<h4 class="primary type-info">Economy segment</h4>
+							<h4 class="primary type-info">{{ 'ATLAS.economy_segment' | translate }}</h4>
 							<button class="btn btn-outline-primary mr-1" id="dropdownIndustry" ngbDropdownToggle>{{ selectedIndustryGroup }}</button>
 							<div ngbDropdownMenu aria-labelledby="dropdownIndustry">
-								<button class="dropdown-item" *ngFor="let stop_industry of selectedIndustryGroupList" (click)="industrySelectorDrop(stop_industry)" >{{stop_industry}}</button>
+								<button class="dropdown-item" *ngFor="let stop_industry of selectedIndustryGroupList" (click)="industrySelectorDrop(stop_industry)">{{stop_industry}}</button>
 							</div>
 						</div>
 					</div>
 					<div class="col-6">
 						<div ngbDropdown>
-							<h4 class="danger type-info">Industry </h4>
+							<h4 class="danger type-info">{{ 'ATLAS.industry' | translate }}</h4>
 							<button class="btn btn-outline-danger mr-1" id="dropdownScenario" ngbDropdownToggle>{{ selectedIndustrySector }}</button>
 							<div ngbDropdownMenu aria-labelledby="dropdownScenario">
-								<button class="dropdown-item" *ngFor="let stop_sector of selectedIndustrySectorList" (click)="sectorSelectorDrop(stop_sector)" >{{stop_sector}}</button>
+								<button class="dropdown-item" *ngFor="let stop_sector of selectedIndustrySectorList" (click)="sectorSelectorDrop(stop_sector)">{{stop_sector}}</button>
 							</div>
 						</div>
 					</div>
@@ -300,7 +304,7 @@
 							<table class="table table-sm">
 								<thead>
 									<tr>
-										<th>Measures QoQ or index</th>
+										<th>{{ 'ATLAS.measures_qoq_or_index' | translate }}</th>
 										<th>{{data_income_table.data_columns[0]}}</th>
 										<th>{{data_income_table.data_columns[1]}}</th>
 										<th>{{data_income_table.data_columns[2]}}</th>
@@ -322,7 +326,7 @@
 								</thead>
 								<tbody>
 									<tr>
-										<th scope="row"><a>Previous Q</a></th>
+										<th scope="row"><a>{{ 'ATLAS.previous_q' | translate }}</a></th>
 										<td>{{data_income_table.data_last_q[0]}}</td>
 										<td>{{data_income_table.data_last_q[1]}}</td>
 										<td>{{data_income_table.data_last_q[2]}}</td>
@@ -342,7 +346,7 @@
 										<td>{{data_income_table.data_last_q[16]}}</td>
 									</tr>
 									<tr>
-										<th scope="row"><a>Current</a></th>
+										<th scope="row"><a>{{ 'ATLAS.current' | translate }}</a></th>
 										<td>{{data_income_table.data_current[0]}}</td>
 										<td>{{data_income_table.data_current[1]}}</td>
 										<td>{{data_income_table.data_current[2]}}</td>
@@ -362,7 +366,7 @@
 										<td>{{data_income_table.data_current[16]}}</td>
 									</tr>
 									<tr>
-										<th scope="row"><a>Next Q Baseline</a></th>
+										<th scope="row"><a>{{ 'ATLAS.next_q_baseline' | translate }}</a></th>
 										<td>{{data_income_table.data_baseline[0]}}</td>
 										<td>{{data_income_table.data_baseline[1]}}</td>
 										<td>{{data_income_table.data_baseline[2]}}</td>
@@ -382,7 +386,7 @@
 										<td>{{data_income_table.data_baseline[16]}}</td>
 									</tr>
 									<tr>
-										<th scope="row"><a>Next Q Consensus</a></th>
+										<th scope="row"><a>{{ 'ATLAS.next_q_consesus' | translate }}</a></th>
 										<td>{{data_income_table.data_consensus[0]}}</td>
 										<td>{{data_income_table.data_consensus[1]}}</td>
 										<td>{{data_income_table.data_consensus[2]}}</td>

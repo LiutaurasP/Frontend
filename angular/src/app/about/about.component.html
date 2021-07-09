@@ -29,13 +29,13 @@
                 <div class="card-content">
                     <div class="card-body">
                         <div class="mb-3">
-                            <span class="text-bold-500 primary" *ngIf="specs_about_tab1_header">  {{ specs_about_tab1_header.tab_subheader }} </span>
+                            <span class="text-bold-500 primary" *ngIf="specs_about_tab1_header">  {{ 'ABOUT.specs_about_tab1.tab_subheader' | translate }} </span>
                             <span class="d-block overflow-hidden" *ngIf="specs_about_tab1_header">
-                                {{ specs_about_tab1_header.tab_subdetails }}
+                                {{ 'ABOUT.specs_about_tab1.tab_subdetails' | translate }}
                             </span>
                         </div>
                         
-                        <div *ngFor="let t_item of specs_about_tab1_details">
+                        <div *ngFor="let t_item of 'ABOUT.specs_about_tab1_details' | translate">
                             <hr>
                             <div class="row" >
                                 <div class="col-sm-3">
@@ -49,7 +49,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <span class="d-block overflow-hidden">Status:</span>
+                                    <span class="d-block overflow-hidden">{{ t_item.tab_status_text}}</span>
                                 </div>
                                 <div class="col-sm-9">
                                     <span class="d-block overflow-hidden" [innerHTML] = "t_item.tab_status"></span>
@@ -71,7 +71,7 @@
                 <div class="card-content">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12" *ngFor="let t_item of specs_about_tab4">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12" *ngFor="let t_item of 'ABOUT.specs_about_tab4' | translate">
                                 <ul class="no-list-style">
                                     <li class="mb-2">
                                         <span class="primary text-bold-500"><a><i class="{{ t_item.entry_icon }} font-small-3"></i>{{ t_item.entry_title }}</a></span>

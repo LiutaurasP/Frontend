@@ -1,5 +1,4 @@
 import { Routes, RouterModule } from '@angular/router';
-
 //Route for content layout with sidebar, navbar and footer.
 
 export const Full_ROUTES: Routes = [
@@ -42,5 +41,13 @@ export const Full_ROUTES: Routes = [
   {
     path: 'pages',
     loadChildren: () => import('../../pages/full-pages/full-pages.module').then(m => m.FullPagesModule)
+  },
+  {
+    path: 'news',
+    loadChildren: () => import('../../news/news.module').then(m => m.NewsModule)
+  },
+  {
+    path: 'firm-level-models',
+    loadChildren: () => import('../../firm-level-models/firm-level-models.module').then(m => m.FirmLevelModelsModule)
   }
 ];

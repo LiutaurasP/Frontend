@@ -1,0 +1,93 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-header">Firm Level Models</div>
+    <p class="content-sub-header"></p>
+  </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row justify-content-between">
+                    <div class="col-2">
+                        <div ngbDropdown>
+                            <h4 class="primary type-info">Country </h4>
+                            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{ countrySelected }}</button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem>{{ countrySelected }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div ngbDropdown>
+                            <h4 class="primary type-info">Sector </h4>
+                            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{ sectorSelected }}</button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem>{{ sectorSelected }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div ngbDropdown>
+                            <h4 class="primary type-info">Industry </h4>
+                            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{ industrySelected }}</button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem>{{ industrySelected }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div ngbDropdown>
+                            <h4 class="primary type-info">Company </h4>
+                            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{ companySelected }}</button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem>{{ companySelected }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Balance sheet</th>
+                                            <th>Last value</th>
+                                            <th>Latest value</th>
+                                            <th>This q value</th>
+                                            <th>Potential</th>
+                                            <th>Next q base value</th>
+                                            <th>Next q cons value</th>
+                                            <th>Delta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Revenue</td>
+                                            <td><a class="card-link primary" (click)=getDetails()>11356.307692307691</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>7281.6071549245025</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>7204.8098478434795</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>8026.083293741413</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>8354.786378545954</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>8416.95948537314</a></td>
+                                            <td><a class="card-link primary" (click)=getDetails()>-0.0</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="selected">
+                        <div class="col-12">
+                            <div [chart]="chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

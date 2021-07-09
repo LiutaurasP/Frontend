@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface About_General{
     version: number;
@@ -73,7 +74,10 @@ export class AboutComponent {
     //Variable Declaration
     currentPage: string = "Tab1"
 
-    constructor(private http: HttpClient, private router: Router) {
+    constructor(private http: HttpClient,
+                private router: Router,
+                private readonly translate: TranslateService) {
+        translate.setDefaultLang('en');
     }
     
     ngOnInit() {

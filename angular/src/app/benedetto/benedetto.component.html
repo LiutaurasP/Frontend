@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="content-header">Sectoral performance YoY</div>
+    <div class="content-header">{{ 'BENEDETTO.header' | translate}}</div>
     <p class="content-sub-header"></p>
   </div>
 </div>
@@ -12,19 +12,19 @@
 				<div class="row justify-content-between">
 					<div class="col-2">
 						<div ngbDropdown>
-							<h4 class="primary type-info">Country </h4>
-							<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ countryClassSelected }}</button>
+							<h4 class="primary type-info">{{ 'BENEDETTO.table_country_select' | translate }}</h4>
+							<button class="btn btn-outline-primary mr-1" id="dropdownAsset" ngbDropdownToggle>{{ ('COUNTRIES.' + countryClassSelected) | translate }}</button>
 							<div ngbDropdownMenu aria-labelledby="dropdownCountry">
-								<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countryClassSelectorDrop(stop_country)" >{{stop_country}}</button>
+								<button class="dropdown-item" *ngFor="let stop_country of countryList" (click)="countryClassSelectorDrop(stop_country)">{{ ('COUNTRIES.' + stop_country) | translate }}</button>
 							</div>
 						</div>
 					</div>
 					<div class="col-2">
 						<div ngbDropdown>
-							<h4 class="danger type-info">Scenario </h4>
-							<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ selectedScenario }}</button>
+							<h4 class="danger type-info" i18n="scenario">{{ 'BENEDETTO.table_scenario_select' | translate }}</h4>
+							<button class="btn btn-outline-danger mr-1" id="dropdownSector" ngbDropdownToggle>{{ ('BENEDETTO.' + selectedScenario) | translate }}</button>
 							<div ngbDropdownMenu aria-labelledby="dropdownScenario">
-								<button class="dropdown-item" *ngFor="let stop_scenario of scenarioList" (click)="scenarioSelectorDrop(stop_scenario)" >{{stop_scenario}}</button>
+								<button class="dropdown-item" *ngFor="let stop_scenario of scenarioList" (click)="scenarioSelectorDrop(stop_scenario)">{{ ('BENEDETTO.' + stop_scenario) | translate }}</button>
 							</div>
 						</div>
 					</div>
@@ -32,7 +32,7 @@
 			</div>
 			<div class="card-content">
 				<div class="card-header">
-					Model version <span class="primary text-bold-500">0.01</span>.
+					{{ 'BENEDETTO.model_version' | translate }}<span class="primary text-bold-500">0.01</span>.
 				</div>
 				<div class="card-body">
 					<div class="row">
@@ -41,10 +41,10 @@
 								<table class="table table-sm">
 									<thead>
 										<tr *ngIf="tableData[0].measure">
-											<th>Measure</th>
-											<th>Category</th>
-											<th>Sector</th>
-											<th>Month: {{tableData[0].stamp_tm2}}</th>
+											<th>{{ 'BENEDETTO.measure' | translate }}</th>
+											<th>{{ 'BENEDETTO.category' | translate }}</th>
+											<th>{{ 'BENEDETTO.sector' | translate }}</th>
+											<th>{{ 'BENEDETTO.month' | translate }}: {{tableData[0].stamp_tm2}}</th>
 											<th>{{tableData[0].stamp_tm1}}</th>
 											<th>{{tableData[0].stamp_tm0}}</th>
 											<th>{{tableData[0].stamp_tp1}}</th>
@@ -54,9 +54,9 @@
 									</thead>
 									<tbody>
 										<tr *ngFor="let t_item_d of tableData">
-											<td>{{t_item_d.measure}}</td>
-											<td>{{t_item_d.category}}</td>
-											<td><a (click)="GetDetails(content, t_item_d.measure, t_item_d.category, t_item_d.sector)" class="card-link primary">{{t_item_d.sector}}</a></td>
+											<td>{{ ('BENEDETTO.measure_types.' + t_item_d.measure) | translate }}</td>
+											<td>{{ ('BENEDETTO.category_types.' + t_item_d.category) | translate}}</td>
+											<td><a (click)="GetDetails(content, t_item_d.measure, t_item_d.category, t_item_d.sector)" class="card-link primary">{{ ('BENEDETTO.sector_types.' + t_item_d.sector) | translate }}</a></td>
 											<td>{{t_item_d.value_tm2 | number:'1.2-2'}}</td>
 											<td>{{t_item_d.value_tm1 | number:'1.2-2'}}</td>
 											<td>{{t_item_d.value_tm0 | number:'1.2-2'}}</td>
@@ -82,7 +82,7 @@
 					<div *ngIf="flaglineChart" [chart]="lineChart"></div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')">Close</button>
+					<button type="button" class="btn btn-primary btn-raised" (click)="c('Close click')" i18n="modal save button">{{ 'BENEDETTO.close' | translate }}</button>
 				</div>
 			</ng-template>
 		</div>

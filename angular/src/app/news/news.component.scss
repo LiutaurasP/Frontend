@@ -1,0 +1,55 @@
+.article {
+    border-top: 2px solid black;
+}
+
+.summary-list-items {
+    list-style-type: square;
+}
+
+.article-text > .row > .col-11 {
+    padding-left: 40px;
+}
+
+.editable-content {
+    border: 1px solid #ced4da;
+}
+
+.bold-text {
+    font-weight: 600;
+}
+
+.article-preview {
+    width: 100%;
+}
+
+.article-date {
+    width: fit-content;
+    border-bottom: 1px solid white !important;
+}
+
+.primary-article > .article-text {
+    overflow:hidden;
+    opacity: 0;
+    height: 0;
+    transition: height 0.5s ease-out, opacity 0.5s ease;
+}
+
+.hidden-article {
+    .article-summary {
+        overflow:hidden;
+        opacity: 0;
+        height: 0;
+        transition: height 0.5s ease-out, opacity 0.5s ease;
+    }
+    
+    .article-text {
+        overflow:hidden;
+        opacity: 0;
+        height: 0;
+        transition: height 0.5s ease-out, opacity 0.5s ease;
+    }
+}
+
+.modal-dialog {
+    max-width: 1140px;
+}

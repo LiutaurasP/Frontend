@@ -1,0 +1,168 @@
+<section id="user-profile">
+    <div class="row d-flex justify-content-end">
+        <div class="col-2">
+            <button type="button" class="btn btn-outline-primary" (click)="openXl(content)" i18n="upload button|Upload post button">Upload post</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card profile-with-cover">
+                <div class="media profil-cover-details row d-flex align-items-end">
+                    <div class="col-5">
+                        <div class="d-flex justify-content-end">
+                            <h1>Economic</h1>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="align-self-center halfway-fab text-center">
+                            <a class="profile-image">
+                                <img src="{{specs_news_general.img_center}}" class="rounded-circle img-border width-100" alt="Card image">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <h1>News</h1>                   
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--<section id="top-tab">-->
+<!--    <div class="row pb-3">-->
+<!--        <div class="col-2">-->
+<!--            <div class="align-self-center halfway-fab text-center">-->
+<!--                <a class="profile-image">-->
+<!--                    <img src="{{specs_news_general.img_center}}" class="rounded-circle img-border width-100" alt="AlphaHuntsman logo">-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-2 d-flex align-items-center">-->
+<!--            <div>-->
+<!--            <h1>Economic News</h1>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-8">-->
+<!--            <div class="row">-->
+<!--                <div class="col-10">-->
+<!--                </div>-->
+<!--                <div class="col-2">-->
+<!--                    <button type="button" class="btn btn-outline-primary" (click)="openXl(content)" i18n="upload button|Upload post button">Upload post</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+
+<section id="News" class="pt-3">
+    <div class="article pt-3 mx-3" *ngFor="let article of articles_array; let i = index" [attr.article]="i" [ngClass]="i === 0 ? 'primary-article' : 'hidden-article'">
+        <div class="article-header">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-white bg-dark mb-3">
+                      <div class="card-header article-date">{{article.date | date}}</div>
+                      <div class="card-body">
+                        <p>{{article.sub_header}}</p>
+                        <div>
+                            <h2>{{article.header}}</h2>
+                        </div>
+                        <div class="mt-3" *ngIf="!article.isSummary">
+                            <button class="btn btn-outline-light" (click)="showAnotherArticle($event, article)" i18n="read button|Read more button">Read more</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article-summary">
+            <div class="row pb-3">
+                <div class="col-12 pr-3">
+                    <ul class="summary-list-items">
+                        <li *ngFor="let summary of article.summary">
+                            {{summary}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="article-text">
+            <div class="row">
+                <div class="col-12  mb-2" [innerHTML]="article.main_text">
+                </div>
+            </div>
+        </div>
+        <div *ngIf="article.isSummary && article.state === 'hidden'">
+            <button class="btn btn-outline-dark" (click)="showArticle($event, article)" i18n="read button">Read more</button>
+        </div>
+    </div>
+</section>
+
+<!--  Upload post modal  -->
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" i18n="post article modal header|create new article post">Create new article post</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <div class="mb-2">
+        <p>Date: {{article_info.date | date}}</p>
+      </div>
+      <div class="mb-2">
+          <label class="form-label" i18n="post article modal|subheader">Sub Header</label>
+          <input type="text" class="form-control" [(ngModel)]="article_info.sub_header">
+      </div>
+      <div class="mb-2">
+        <label class="form-label" i18n="post article modal header|header">Header</label>
+        <input type="text" class="form-control" [(ngModel)]="article_info.header">
+      </div>
+      <div class="mb-2">
+        <label class="form-label" i18n="post article modal summary">Summary</label>
+        <textarea class="form-control"rows="3" [(ngModel)]="article_summary_preview"></textarea>
+        <button type="button" class="btn btn-outline-primary mt-2" (click)="addArticleSummary(article_summary_preview)" i18n="post article button|add another summary">Add another summary</button>
+      </div>
+      <div class="mb-2">
+          <label class="form-label" i18n="post article modal main text">Main Text</label>
+          <div>
+              <quill-editor [(ngModel)]="article_info.main_text"></quill-editor>
+          </div>
+      </div>
+    <div class="row mx-1">
+        <div class="article-preview">
+        <div class="article-header">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-white bg-dark mb-3">
+                      <div class="card-header">{{article_info.date | date}}</div>
+                      <div class="card-body">
+                        <p>{{article_info.sub_header}}</p>
+                        <h2>{{article_info.header}}</h2>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article-summary">
+            <div class="row pb-3">
+                <div class="col-12 pr-3">
+                    <ul class="summary-list-items">
+                        <li *ngFor="let summary of article_info.summary">{{summary}}</li>
+                        <li *ngIf="article_summary_preview.length > 0">{{article_summary_preview}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="article-text">
+            <div class="row">
+                <div class="col-12" [innerHTML]="article_info.main_text"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="saveArticle()" i18n="modal save button">Save</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Close click')" i18n="modal close button">Close</button>
+  </div>
+</ng-template>

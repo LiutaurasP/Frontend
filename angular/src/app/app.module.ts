@@ -21,6 +21,7 @@ import {
 import { AppComponent } from "./app.component";
 import { ContentLayoutComponent } from "./layouts/content/content-layout.component";
 import { FullLayoutComponent } from "./layouts/full/full-layout.component";
+import { CustomLoader } from './shared/translation/CustomLoader';
 
 import { DragulaService } from "ng2-dragula";
 import { AuthService } from "./shared/auth/auth.service";
@@ -48,7 +49,7 @@ export function createTranslateLoader(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: createTranslateLoader,
+        useClass: CustomLoader,
         deps: [HttpClient]
       }
     }),

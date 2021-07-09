@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormControl, FormGroup, Validators, NgForm } from '@angular/forms';
 import { Router } from "@angular/router";
 import { LocalDataSource } from 'ng2-smart-table';
+import { TranslateService } from '@ngx-translate/core';
 
 import { UserModel } from '../shared/auth/userModel';
 import { AuthService } from '../shared/auth/auth.service';
@@ -84,16 +85,16 @@ export class BenedettoComponent implements OnInit{
             ]
     };
 
-    constructor(
-        private modalService: NgbModal,
-        private http: HttpClient,
-        private router: Router,
-        private authenticationService: AuthService
-    ) {
+    constructor(private modalService: NgbModal,
+                private http: HttpClient,
+                private router: Router,
+                private authenticationService: AuthService,
+                private readonly translate: TranslateService) {
+        translate.setDefaultLang('en');
         this.flagTable = false;
         this.flaglineChart = false;
-      //Load scenarios
-      this.http.get<string[]>('https://api.alphahuntsman.com/benedetto/scenarios').subscribe((data_scenarions: string[]) => {
+        //Load scenarios
+        this.http.get<string[]>('https://api.alphahuntsman.com/benedetto/scenarios').subscribe((data_scenarions: string[]) => {
         this.scenarioList = new Array<string>();
         for(var t_stop of data_scenarions){
             this.scenarioList.push(t_stop);
@@ -143,7 +144,14 @@ export class BenedettoComponent implements OnInit{
                     this.flaglineChart = true;
                     window.dispatchEvent(new Event('resize'));
                     //Final model activation
-                    this.title = t_measure + " " + t_category + " " + t_sector;
+                    let measure: string;
+                    let category: string;
+                    this.translate.get('BENEDETTO.measure_types.' + t_measure).subscribe(result => measure = result);
+                    this.translate.get('BENEDETTO.category_types.' + t_category).subscribe(result => category = result);
+                    this.translate.get('BENEDETTO.sector_types.' + t_sector).subscribe(result => {
+                        this.title = `${measure} ${category} ${result}`;
+                    });
+                    // this.title = t_measure + " " + t_category + " " + t_sector;
                     this.modalService.open(content, {windowClass : "atlasIndexPlot"}).result.then((result) => {      
                         }, (reason) => {     
                     });
