@@ -108,7 +108,6 @@
         "header": "Sectoral performance YoY",
         "table_country_select": "Country ",
         "table_scenario_select": "Scenario ",
-        "country_list": ["Argentina", "Australia", "Austria", "Belgium", "Brazil", "Bulgaria", "Canada", "Chile", "China", "Denmark", "Egypt", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Korea", "Latvia", "Lithuania", "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand", "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Romania", "Singapore", "Slovakia", "Slovenia", "South Africa", "Spain", "Sweden", "Switzerland", "Taiwan", "Thailand", "Turkey", "UK", "US", "Ukraine", "Vietnam"],
         "Baseline": "Baseline",
         "Consensus": "Consensus",
         "model_version": "Model version ",

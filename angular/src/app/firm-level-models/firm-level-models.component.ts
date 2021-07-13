@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { Chart } from 'angular-highcharts';
 
@@ -8,7 +9,7 @@ import { Chart } from 'angular-highcharts';
     styleUrls: ['./firm-level-models.component.scss']
 })
 
-export class FirmLevelModelsComponent {
+export class FirmLevelModelsComponent implements OnInit {
     // country list
     public countrySelected: string = 'Lithuania';
     public sectorSelected: string = 'Consumer Defensive';
@@ -81,7 +82,11 @@ export class FirmLevelModelsComponent {
         }]
       });
 
-    public constructor() {}
+    public constructor(private http: HttpClient) {}
+    
+    public ngOnInit() {
+        this.http.get('http://51.91.23.157:500/')
+    }
     
     public getDetails(): void {
         this.selected = true;
