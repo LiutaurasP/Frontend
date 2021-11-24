@@ -103,9 +103,6 @@ MIT
 @ngx-translate/core
 MIT
 
-@ngx-translate/http-loader
-MIT
-
 @swimlane/ngx-datatable
 MIT
 (The MIT License)
